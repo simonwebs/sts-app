@@ -6,7 +6,6 @@ import { UserProfiles } from '../../api/collections/UserProfiles';
 import { Meteor } from 'meteor/meteor';
 import UserDetails from './UserDetails';
 import ChatComponent from '../components/chat/ChatComponent'; // Assuming ChatComponent is in the same directory
-import { FaComments } from 'react-icons/fa'; // Importing chat icon from react-icons
 
 import ProfileHeader from './ProfileHeader'; // Assume this is a presentational component for the profile header
 
@@ -61,7 +60,6 @@ const ProfilePage = () => {
           onClick={handleOpenChat}
           aria-label="Open chat"
         >
-          <FaComments size={24} />
         </button>
 
         {/* Chat Component - conditional rendering based on showChat state */}

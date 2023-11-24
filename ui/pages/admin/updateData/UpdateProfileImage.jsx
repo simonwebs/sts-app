@@ -6,7 +6,7 @@ import { MdAddAPhoto } from 'react-icons/md';
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 
-const UpdateProfileImage = () => {
+const UpdateProfileImage = ({ onImageUpdated }) => {
   const [profileImage, setProfileImage] = useState(null);
   const [progress, setProgress] = useState(0);
   const cropperRef = useRef(null);
@@ -57,6 +57,7 @@ const UpdateProfileImage = () => {
       } else {
         Swal.fire('Success', 'Profile image uploaded successfully!', 'success');
         setProfileImage(null);
+        onImageUpdated();
       }
       setProgress(0);
     });

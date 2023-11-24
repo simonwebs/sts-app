@@ -113,5 +113,26 @@ Meteor.methods({
       throw new Meteor.Error('Upload failed', error.message);
     }
   },
-  
+  'userProfiles.setProfileImage'(newImageUrl) {
+    // Check the newImageUrl argument to ensure it is a string
+    check(newImageUrl, String);
+
+    // Make sure the user is logged in before proceeding
+    if (!this.userId) {
+      throw new Meteor.Error('not-authorized', 'You must be logged in to update your profile image.');
+    }
+
+    // Update the user's profile image
+    const result = UserProfiles.update(
+      { authorId: this.userId }, // Ensuring the operation is performed on the logged-in user's profile
+      { $set: { 'profilePhotos.$.isProfilePhoto': false }, // Reset isProfilePhoto for all
+        $set: { 'profilePhotos.$[elem].isProfilePhoto': true } }, // Set isProfilePhoto for the chosen one
+      { arrayFilters: [{ "elem.photoUrl": newImageUrl }] } // Use arrayFilters to identify the correct photo
+    );
+
+    // If the update operation didn't affect any documents, throw an error
+    if (result.nModified === 0) {
+      throw new Meteor.Error('update-failed', 'Failed to update profile image.');
+    }
+  },
 });

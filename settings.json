@@ -13,7 +13,7 @@
       "username": "admin",
       "password": "$2b$10$C4ivFH3YxZjffSVjwvDvQ.uqjopZM02l1APXcGh.xym7SChw5haiS"
     },
-    "superAdminEmail": "admin@cedarcbs.com",
+    "superAdminEmail": "admin@seyimsmultimedia.com",
     "facebookAppId": "YOUR_FACEBOOK_APP_ID",
     "facebookSecret": "YOUR_FACEBOOK_SECRET",
     "cloudinary": {

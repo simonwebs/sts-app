@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTracker } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
@@ -11,7 +11,12 @@ import UpdateBannerImage from '../pages/admin/updateData/UpdateBannerImage';
 const ProfileHeader = () => {
   const { userId } = useParams();
   const cloudName = 'swed-dev'; // Replace with your actual cloud name
+  const [imageVersion, setImageVersion] = useState(Date.now());
 
+  // Function to refresh the profile image
+  const refreshProfileImage = () => {
+    setImageVersion(Date.now());
+  };
   const { user, userProfile, isLoading, isCurrentUserProfile } = useTracker(() => {
     const noDataAvailable = { user: null, userProfile: null, isLoading: true, isCurrentUserProfile: false };
 
@@ -35,7 +40,7 @@ const ProfileHeader = () => {
     //console.log('UserProfile data:', userProfile);
 
     return { user, userProfile, isLoading, isCurrentUserProfile };
-  }, [userId]);
+  }, [userId, imageVersion]);
 
   //console.log('isLoading:', isLoading);
   //console.log('isCurrentUserProfile:', isCurrentUserProfile);
@@ -49,21 +54,23 @@ const ProfileHeader = () => {
    // console.error('User profile not found for userId:', userId);
     return <div>User profile not found.</div>;
   }
-
+  const refreshProfileDetails = () => {
+    // Force the useTracker to re-run by updating the state that it depends on
+    setImageVersion(Date.now());
+  };
   // Check and log profile photos
  // console.log('Profile Photos:', userProfile.profilePhotos);
 
-  const profileImageId = user?.profile?.image;
+ const profileImageId = user?.profile?.image;
  const bannerImageId = user?.profile?.bannerImage ? user.profile.bannerImage.split('/upload/').pop() : null;
-
- // console.log('Profile Image ID:', profileImageId);
- // console.log('Banner Image ID:', bannerImageId);
  const defaultBannerImage = "https://via.placeholder.com/150";
-const defaultProfileImage = "https://via.placeholder.com/150";
+ const defaultProfileImage = "default_profile_image_public_id"; // Replace with your actual public ID if hosted on Cloudinary
 
-  // Correction for userName error
-  const userName = userProfile?.firstName || userProfile?.lastName || user?.username || 'Username not ready';
+ // Append the image version query parameter to force refresh
+ const profileImageUrl = `${profileImageId || defaultProfileImage}?_v=${imageVersion}`;
 
+ const userName = userProfile?.firstName || userProfile?.lastName || user?.username || 'Username not ready';
+ 
   return (
     <div className="bg-gray-100 w-full dark:bg-gray-700 mt-16 py-2 px-1">
       {/* Banner Image */}
@@ -108,7 +115,7 @@ const defaultProfileImage = "https://via.placeholder.com/150";
           />
           {isCurrentUserProfile && (
             <div className="absolute -bottom-3 -right-3">
-              <UpdateProfileImage userId={userId} />
+            <UpdateProfileImage onImageUpdated={refreshProfileDetails} />
             </div>
           )}
         </div>

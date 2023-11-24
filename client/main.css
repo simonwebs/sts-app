@@ -1,3 +1,930 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+:root {
+  --primary-color: rgb(76, 59, 171); /* Default primary color */
+  --primary-text-color: rgb(76, 59, 171); /* Default primary text color */
+  
+}
+
+* {
+  box-sizing: border-box;
+}
+::-webkit-scrollbar {
+    display: none;
+}
+
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+    scrollbar-width: none;  /* For Firefox */
+    -ms-overflow-style: none;  /* For Internet Explorer and Edge */
+}
+
+body {
+  display: flex;
+   background-color: var(--color);
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: hidden;
+    margin: 0; /* Reset default margin to prevent shifting */
+  overflow: hidden; /* Hide overflow */
+  background-color: var(--primary-color);
+   color: var(--primary-text-color);
+  background-color: white;
+  -webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+}
+/* General Utility Styles */
+*, *::before, *::after {
+  box-sizing: border-box;
+  outline: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+/* For tablets and mobiles */
+@media only screen and (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+  .header, .main-content, .footer {
+    padding: 10px;
+    font-size: 16px;
+  }
+  .header {
+    background-color: #eee;
+  }
+  .main-content {
+    margin: 0;
+  }
+  .footer {
+    color: #ccc;
+    display: none;
+  }
+  /* Add other styles for this breakpoint here */
+}
+/* SocialMediaIcons.css */
+.social-icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px; /* Space between icons */
+}
+
+.social-icon {
+  margin: 0 8px; /* Optional additional spacing if needed */
+}
+
+/* For older phones */
+@media only screen and (max-width: 400px) {
+  body {
+    font-size: 12px;
+  }
+  .header {
+    padding: 5px;
+  }
+  .main-content {
+    padding: 5px;
+  }
+  /* Hide navigation on very small screens */
+  .navigation {
+    display: none;
+  }
+  /* Add other styles for this breakpoint here */
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+
+.custom-rounded {
+  border-radius: 50%;
+}
+/* Add this to your styles.css */
+.new-post-container {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.new-post-button {
+  background-color: #FF385C;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+/* Media query to adjust AdminHome component width for LG to SM screens */
+@media screen and (max-width: 1041px) {
+  .full-width-home {
+    width: 100%;
+  }
+}
+
+/* transaction */
+
+canvas {
+  max-width: 100%; /* Ensure the chart fits the container */
+  height: auto; /* Responsive height */
+}
+/* Styles for the chart container */
+.chart-container {
+  position: relative;
+  max-width: 600px;
+  margin: auto;
+}
+
+.new-post-input {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.new-post-label {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.progress-bar {
+  height: 5px;
+  background-color: #ccc;
+}
+
+.progress-bar-inner {
+  height: 5px;
+  background-color: #FF385C;
+}
+
+/* Scrollbar Customization */
+/* Webkit Browsers */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: none;
+}
+
+/* IE and Edge */
+* {
+  -ms-overflow-style: none;
+}
+
+.form-container {
+  border-radius: 12px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #000;
+  color: white;
+  padding: 8px;
+  z-index: 100;
+  transition: top 0.3s ease;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+#line-clamp-1 {
+  overflow: hidden;
+display: -webkit-box;
+-webkit-box-orient: vertical;
+-webkit-line-clamp: 1;
+}
+
+.loader {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 4px solid white;
+  width: 24px;
+  height: 24px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+/* modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 500px;
+}
+
+/* album card */
+.flex {
+  transition: all 0.3s ease;
+}
+.first-card {
+  transform: skewX(12deg) rotate(1deg);
+}
+
+.last-card {
+  transform: skewX(-12deg) rotate(-1deg);
+}
+
+/* line clamp */
+
+#line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+#line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+#line-clamp-4 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+#line-clamp-5 {
+  overflow: hidden;
+display: -webkit-box;
+-webkit-box-orient: vertical;
+-webkit-line-clamp: 5;
+}
+
+
+#line-clamp-6 {
+  overflow: hidden;
+display: -webkit-box;
+-webkit-box-orient: vertical;
+-webkit-line-clamp: 6;
+}
+
+
+hover:line-clamp-10 {
+ overflow: hidden;
+display: -webkit-box;
+-webkit-box-orient: vertical;
+-webkit-line-clamp: 10;
+}
+
+/* Media Queries */
+
+/* For tablets and mobiles */
+@media only screen and (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .header {
+    padding: 10px;
+  }
+
+  .footer {
+    display: none;
+  }
+}
+
+/* For older phones */
+@media only screen and (max-width: 400px) {
+  body {
+    font-size: 12px;
+  }
+
+  .header {
+    padding: 5px;
+  }
+
+  .main-content {
+    margin: 0;
+    padding: 5px;
+  }
+
+  .navigation {
+    display: none;
+  }
+}
+
+/* Cross-Browser Support */
+.flex {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.pagination-button {
+  background-color: #f3f4f6;
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination-button:hover {
+  background-color: #e5e7eb;
+}
+
+.custom-image {
+  width: 8px;
+}
+
+@media (min-width: 640px) {
+  .custom-image {
+    width: 10px;
+  }
+}
+
+@media (min-width: 768px) {
+  .custom-image {
+    width: 12px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .custom-image {
+    width: 16px;
+  }
+}
+
+/* cookies */
+.cookie-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 1em;
+  z-index: 1000;
+}
+
+.cookie-banner button {
+  margin: 0.5em;
+}
+/* Regular styles */
+.header, .main-content, .footer {
+  /* Your regular styles */
+  padding: 20px;
+  font-size: 18px;
+}
+
+.header {
+  background-color: #f1f1f1;
+}
+
+.main-content {
+  background-color: #fff;
+}
+
+.footer {
+  background-color: #333;
+  color: #fff;
+}
+
+/* Media Queries */
+@media only screen and (max-width: 768px) {
+  .header, .main-content, .footer {
+    /* Your responsive styles */
+    padding: 10px;
+    font-size: 16px;
+  }
+
+  .header {
+    background-color: #eee;
+  }
+
+  .main-content {
+    margin: 0;
+  }
+
+  .footer {
+    color: #ccc;
+  }
+}
+
+
+/* For tablets and mobiles */
+@media only screen and (max-width: 768px) {
+  body {
+    font-size: 14px; /* Decrease base font size */
+  }
+
+  .header {
+    padding: 10px; /* Smaller header padding */
+  }
+
+  .footer {
+    display: none; /* Hide the footer on smaller screens */
+  }
+}
+
+/* For older phones */
+@media only screen and (max-width: 400px) {
+  body {
+    font-size: 12px; /* Even smaller base font size for older phones */
+  }
+
+  .header {
+    padding: 5px;  /* Even smaller header padding */
+  }
+
+  .main-content {
+    margin: 0;  /* Remove margins */
+    padding: 5px;  /* Add some padding */
+  }
+
+  .navigation {
+    display: none;  /* Hide navigation on very small screens */
+  }
+}
+/* For tablets and mobiles */
+@media only screen and (max-width: 768px) {
+  .guest-navigation.open {
+    display: block;
+  }
+  .guest-navigation.closed {
+    display: none;
+  }
+}
+
+/* For medium screens */
+@media only screen and (max-width: 1024px) {
+  .guest-navigation.open {
+    display: block;
+  }
+  .guest-navigation.closed {
+    display: none;
+  }
+}
+
+.album-container {
+  scroll-padding-top: 4rem; /* Adjust based on your navbar height */
+}
+.post-container {
+  font-family: 'Georgia', serif; /* A readable font */
+}
+
+.post-description {
+  line-height: 1.6; /* Adequate line spacing */
+  margin-bottom: 1em; /* Space between paragraphs */
+}
+/* Custom CSS */
+.title {
+  font-size: 1rem; /* Default size */
+}
+
+/* Medium screens */
+@media only screen and (min-width: 768px) {
+  .title {
+    font-size: 1.25rem;
+  }
+}
+
+/* Large screens */
+@media only screen and (min-width: 1024px) {
+  .title {
+    font-size: 1.5rem;
+  }
+}
+.in-view {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.out-of-view {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.transition-all {
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+/* Slide in from the right */
+.slide-in-from-right {
+  opacity: 0;
+  transform: translateX(100%);
+  animation: slideInRight 1s forwards ease-out 0.5s;
+}
+
+/* Slide in from the left */
+.slide-in-from-left {
+  opacity: 0;
+  transform: translateX(-100%);
+  animation: slideInLeft 1s forwards ease-out 0.5s;
+}
+
+@keyframes slideInRight {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+/* Slide up from the bottom */
+.slide-up {
+  opacity: 0;
+  transform: translateY(100%);
+  animation: slideUp 1s forwards ease-out 0.5s;
+}
+
+@keyframes slideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.text-silver { color: #C0C0C0; } /* Replace with the actual silver color code */
+.text-gold { color: #FFD700; }   /* Replace with the actual gold color code */
+.text-platinum { color: #E5E4E2; } /* Replace with the actual platinum color code */
+
+.beautiful-input {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 12px;
+  background-color: #f8f8f8;
+  transition: all 0.3s ease-in-out;
+}
+.file-input {
+  border: 1px solid #ccc;
+  display: block;
+  width: 100%;
+  padding: 6px 12px;
+  margin-bottom: 10px;
+}
+
+.progress-bar {
+  width: 100%;
+  color: #fff;
+  background-color: #007bff;
+  display: block;
+}
+
+.image-preview-container {
+  position: relative;
+}
+
+
+.profile-photo img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.profile-info {
+  padding: 16px;
+}
+
+.profile-info h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.profile-info .profile-bio {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.profile-actions {
+  padding: 16px;
+  text-align: center;
+}
+
+.profile-actions button {
+  padding: 8px 16px;
+  margin-right: 8px;
+  border: none;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+.profile-actions button:last-child {
+  margin-right: 0;
+}
+
+.profile-actions button:hover {
+  background-color: #e0e0e0;
+}
+
+/* profile card */
+.explore-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.profile-card-container {
+  position: relative; /* Adjusted from absolute to relative for direct children of flex container */
+  width: 90%; /* Width of card to be less than screen width for aesthetics */
+  max-width: 500px; /* Maximum width of card */
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease;
+  opacity: 1;
+}
+
+.profile-card-container.hidden {
+  opacity: 0;
+  transform: scale(0.95); /* Slightly scale down the card when hidden */
+  pointer-events: none; /* Disables interaction with the hidden card */
+}
+
+.profile-card {
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.profile-photo img {
+  width: 100%;
+  height: auto;
+  object-fit: cover; /* Keep aspect ratio but fill space */
+}
+
+.profile-info {
+  padding: 1rem;
+}
+
+.profile-actions {
+  display: flex;
+  justify-content: space-around;
+  padding: 1rem;
+}
+
+.pass-button,
+.like-button,
+.details-button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pass-button {
+  color: #E74C3C; /* Red color for pass */
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.like-button {
+  color: #2ECC71; /* Green color for like */
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.details-button {
+  color: #3498DB; /* Blue color for details */
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.pass-button:hover,
+.like-button:hover,
+.details-button:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Light background on hover for buttons */
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .profile-card-container {
+    width: 100%;
+  }
+}
+@keyframes swipeOutLeft {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-100vw);
+    opacity: 0;
+  }
+}
+
+@keyframes swipeOutRight {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100vw);
+    opacity: 0;
+  }
+}
+
+.profile-card-container.swipe-left {
+  animation: swipeOutLeft 0.5s forwards;
+}
+
+.profile-card-container.swipe-right {
+  animation: swipeOutRight 0.5s forwards;
+}
+
+/* Rest of your CSS */
+
+.profile-photo-container {
+  width: 100%; /* Full width */
+  margin-bottom: 1rem; /* Adjust the margin as needed */
+}
+
+.profile-photo {
+  width: 100%; /* Full width */
+  height: auto; /* Maintain aspect ratio */
+  object-fit: cover; /* Cover the area without stretching the image */
+}
+
+.profile-info-container {
+  padding: 0.5rem; /* Add padding around the text */
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem; /* Add some space between the header and the bio */
+}
+
+.profile-name-age {
+  font-size: 1.25rem; /* Adjust font size as needed */
+  font-weight: bold;
+}
+
+.status-indicator {
+  /* Adjust the font size and padding as needed */
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.profile-bio {
+  font-size: 1rem; /* Adjust font size as needed */
+}
+
+.matches-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.match-photo {
+  width: 80px; /* Adjust size as needed */
+  height: 80px;
+  border-radius: 40px; /* Makes the image round */
+  object-fit: cover;
+}
+
+.match-details {
+  flex-grow: 1;
+}
+
+
+.photo-gallery {
+  display: flex;
+  overflow-x: auto;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.profile-photo {
+  max-height: 200px;
+  object-fit: cover;
+}
+
+.details p {
+  margin: 8px 0;
+}
+
+.card-footer {
+  padding: 16px;
+  background-color: #f7f7f7;
+  text-align: center;
+}
+
+.crop-btn,
+.clear-btn {
+  background-color: #007bff;
+  border: none;
+  padding: 8px 15px;
+  color: white;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.crop-btn:hover,
+.clear-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Add more styles as needed */
+
+.beautiful-input:focus {
+  border: 2px solid #007bff;
+  box-shadow: 0 0 5px #007bff;
+}
+
+.input-label {
+  font-size: 16px;
+  color: #333;
+  font-weight: 600;
+}
+
+/* You can also add some hover effects */
+.beautiful-input:hover {
+  border: 2px solid #007bff;
+}
+/* In your CSS file */
+.profile-card-image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+
+/* Small screens */
+@media (max-width: 640px) {
+  .profile-card-image {
+    aspect-ratio: 1;
+  }
+}

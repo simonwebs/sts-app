@@ -1,9 +1,12 @@
-import React from 'react';
 import { Meteor } from 'meteor/meteor';
+import React, { lazy } from 'react';
 import { createRoot } from 'react-dom/client';
-import { App } from '../app/general/App';
+
+// Lazy load the App component.
+const App = lazy(() => import('../ui/common/general/App'));
 
 Meteor.startup(() => {
-  const root = createRoot(document.getElementById('app'));
+  const container = document.getElementById('react-target');
+  const root = createRoot(container);
   root.render(<App />);
 });

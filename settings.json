@@ -1,0 +1,59 @@
+{
+  "public": {
+    "agora": {
+      "appId": "b8fc7980fdba40ee90d1d08f6535386a"
+    }
+  },
+  "private": {
+    "agora": {
+      "appCertificate": "b8fc7980fdba40ee90d1d08f6535386a"
+    },
+    "admin": {
+      "email": "fadecsolution@gmail.com",
+      "username": "admin",
+      "password": "$2b$10$C4ivFH3YxZjffSVjwvDvQ.uqjopZM02l1APXcGh.xym7SChw5haiS"
+    },
+    "superAdminEmail": "admin@cedarcbs.com",
+    "facebookAppId": "YOUR_FACEBOOK_APP_ID",
+    "facebookSecret": "YOUR_FACEBOOK_SECRET",
+    "cloudinary": {
+      "CLOUD_NAME": "swed-dev",
+      "API_KEY": "891695162945397",
+      "API_SECRET": "NqgWjqg6ANiehloQ0N6Zwm5hUy0"
+    }
+  },
+  "ROOT_URL": "http://localhost:3000/",
+  "galaxy.meteor.com": {
+    "env": {
+      "MONGO_URL": "mongodb+srv://exdiconwebs:Klegecomfort1977@cluster0.p431cwx.mongodb.net/we-connect?retryWrites=true&w=majority"
+    }
+  },
+  "prerenderToken": {
+    "token": "1rhfqnOdNMRfaJ3jYT4p",
+    "adaptiveType": "mobile",
+    "query": "cedarcbs.com/path",
+    "exactMatch": "https://www.cedarcbs.com/path",
+    "start": 0,
+    "urls": [
+      "https://www.cedarcbs.com/url/to/recache",
+      "https://www.cedarcbs.com/url/to/recache2",
+      "https://www.sitemaps.org/sitemap.xml"
+    ]
+  },
+  "monti": {
+    "appId": "DN3qDk8ynkdpjg5Mn",
+    "appSecret": "5fd3ee91-cf55-48d6-9615-037cae47eb47"
+  },
+  "appInfo": {
+    "name": "that-connect"
+  },
+  "packages": {
+    "quave:email-postmark": {
+      "from": "admin@seyimsmultimedia.com",
+      "apiToken": "e7637003-62d3-4c87-8976-dd644d930251"
+    }
+  },
+  "googleClientId": "268061852327-aga1f6gs6ftfrhi0b1jcqrdqq4o4d1j6.apps.googleusercontent.com",
+  "googleSecret": "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"
+}
+

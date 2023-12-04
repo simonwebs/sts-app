@@ -5,6 +5,33 @@ import { Meteor } from 'meteor/meteor';
 // Import your UsersCollection
 import { UsersCollection } from '../api/collections/UsersCollection';
 
+
+// Define a new Picker route for searching users
+Picker.route('/search-users', (params, req, res) => {
+  // Get the search query from the request
+  const searchQuery = req.query.q;
+
+  // Fetch users from UsersCollection that match the search query
+  const users = UsersCollection.find(
+    {
+      $or: [
+        { username: { $regex: searchQuery, $options: 'i' } }, // Case-insensitive username search
+        // Add additional fields for searching here based on your schema
+      ],
+    },
+    { fields: { username: 1, profile: 1 } }
+  ).fetch();
+
+  // Prepare user data
+  const userData = users.map((user) => ({
+    username: user.username,
+    profileImage: user.profile.image,
+  }));
+
+  // Send user data as JSON
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify(userData));
+});
 // Define a new Picker route
 Picker.route('/all-users', (params, req, res, next) => {
   // Fetch users from UsersCollection

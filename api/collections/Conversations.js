@@ -7,6 +7,14 @@ export const Conversations = new Mongo.Collection('conversations');
 
 // Define the schema for a Conversation
 const ConversationsSchema = new SimpleSchema({
+  _id: String,
+  authorId: String,
+  createdAt: {
+    type: Date,
+    autoValue: function () {
+      if (this.isInsert && !this.isSet) return new Date();
+    },
+  },
   participants: {
     type: Array,
     label: "Participants",
@@ -20,23 +28,13 @@ const ConversationsSchema = new SimpleSchema({
   'participants.$': {
     type: String,
     label: "Participant",
-    // Use the check package to validate if the string is a valid Mongo ID
     custom() {
-      if (!this.value || !check(this.value, String)) {
-        return SimpleSchema.ErrorTypes.VALUE_NOT_ALLOWED;
+      if (!this.value || !Meteor.isObjectId(this.value)) {
+        return 'notAllowed';
       }
     },
   },
-  createdAt: {
-    type: Date,
-    label: "Creation Date",
-    // Automatically set the creation date on insert
-    autoValue() {
-      if (this.isInsert) {
-        return new Date();
-      }
-    },
-  },
+  
   lastMessage: {
     type: String,
     label: "Last Message",

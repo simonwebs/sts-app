@@ -5,6 +5,7 @@ import { Menu, Transition } from '@headlessui/react';
 import { Image } from 'cloudinary-react';
 import { useLoggedUser } from 'meteor/quave:logged-user-react';
 import Swal from 'sweetalert2';
+import { FaSignInAlt } from 'react-icons/fa';
 
 
 const UserMenu = ({ user }) => {
@@ -44,11 +45,12 @@ const UserMenu = ({ user }) => {
   if (!loggedUser) {
     return (
       <button
-        onClick={() => navigate('/login')}
-        className="text-white font-bold py-2 px-4 rounded w-full sm:w-auto transition duration-300 ease-in-out bg-gradient-to-r from-pink-600 via-voilet-600 to-violet-600 hover:shadow-lg hover:from-pink-700 hover:to-violet-800"
-          >
-        Signup
-      </button>
+  onClick={() => navigate('/login')}
+  className="inline-flex items-center gap-x-2 text-white font-bold py-2 px-4 rounded w-full sm:w-auto transition duration-300 ease-in-out bg-gradient-to-r from-pink-600 via-violet-600 to-violet-600 hover:shadow-lg hover:from-pink-700 hover:to-violet-800"
+>
+  <FaSignInAlt className="w-5 h-5" /> 
+  Signup
+</button>
     );
   }
  

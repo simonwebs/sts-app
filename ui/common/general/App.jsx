@@ -1,14 +1,29 @@
-import React, { Suspense } from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import AppRoutes from './AppRoutes'; // Assuming this path is correct
-import Loading from '../../components/spinner/Loading'; // Assuming this path is correct
-import CookieBanner from './CookieBanner'; // Assuming this path is correct
-import { UserRolesProvider } from './UserRolesContext'; // Assuming this path is correct
-import ErrorBoundary from './ErrorBoundary'; // Assuming this path is correct
+import { Meteor } from 'meteor/meteor';
+import $ from 'jquery'; // Import jQuery if it's not globally available
+import AppRoutes from './AppRoutes';
+import Loading from '../../components/spinner/Loading';
+import CookieBanner from './CookieBanner';
+import { UserRolesProvider } from './UserRolesContext';
+import ErrorBoundary from './ErrorBoundary';
 
 const App = () => {
+  useEffect(() => {
+    const googleAnalyticsId = Meteor.settings.public.googleAnalyticsId;
+
+    $.getScript(`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`, function() {
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', googleAnalyticsId);
+    });
+  }, []);
+
   return (
-    <Suspense
+    <React.Suspense
       fallback={
         <div className="flex justify-center items-center h-screen dark:bg-gray-700">
           <Loading />
@@ -23,7 +38,7 @@ const App = () => {
           </UserRolesProvider>
         </BrowserRouter>
       </ErrorBoundary>
-    </Suspense>
+    </React.Suspense>
   );
 };
 

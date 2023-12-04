@@ -16,12 +16,14 @@ export const RoutePaths = {
   ALBUMS: '/albums',
   CATEGORY: '/explore',
   CONTACT_FORM: '/contact-form',
+  CHAT_REQUESTS_COMPONENT: '/chat-request',
 
   // User profile and settings
   PROFILE_PAGE: '/profile',
   USER_PROFILE_FORM: '/profile-form',
   SETTINGS: '/settings',
   SETTING_PAGE: '/settings',
+  USER_CONTACT: '/user-contact',
   
   // User actions
   CONFIRM_EMAIL: '/confirm-email',
@@ -56,7 +58,7 @@ export const RoutePaths = {
   ALBUM_FORM: '/album-form',
   POST_EDIT_COMPONENT: '/post-edit',
   POST_EDIT_FORM: '/edit-post/:id',
-  
+  CHAT_WINDOW: '/chat-window',
   // Guest routes
   GUEST_DASHBOARD: '/guest-dashboard',
   

@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Meteor } from 'meteor/meteor';
 import PersonalDetails from './PersonalDetails';
 import Preferences from './Preferences';
 import UserProfilePhotos from './UserProfilePhotos';
 import LocationDetails from './LocationDetails';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2'; // Import SweetAlert2
-import ProgressBar from './ProgressBar'; // Assuming this is a separate component
+import Swal from 'sweetalert2';
+import ProgressBar from './ProgressBar';
 
 // Helper function for initialization
 const initializeProfilePhotos = () => Array.from({ length: 4 }, () => '');
@@ -20,8 +20,8 @@ const UserProfileForm = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    birthDate: '', // ISO string format (yyyy-mm-dd) is recommended for date inputs
-    bodyHeight: '', // Store as a string to use with controlled inputs
+    birthDate: '',
+    bodyHeight: '',
     biologicalGender: '',
     personalBio: '',
     lookingForGender: '',
@@ -31,20 +31,51 @@ const UserProfileForm = () => {
     agePreferenceMax: '',
     country: '',
     city: '',
-    authorId: 1,
-    profileCreatedAt: '',
     profilePhotos: [] // Array to store the URLs of uploaded photos
   });
   
   const [profilePhotos, setProfilePhotos] = useState(initializeProfilePhotos());
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate(); 
-
+  const [hasProfile, setHasProfile] = useState(false);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const checkUserProfile = () => {
+      const authorId = Meteor.userId();
+      if (authorId) {
+        Meteor.call('userProfiles.exists', authorId, (error, userProfileExists) => {
+          if (error) {
+            setError('Error checking profile existence: ' + error.reason);
+          } else {
+            setHasProfile(userProfileExists);
+            if (userProfileExists) {
+              // If a profile exists, inform the user and redirect
+              Swal.fire({
+                title: 'Profile Exists',
+                text: 'You have already created a profile.',
+                icon: 'info',
+                confirmButtonText: 'Go to Home'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  navigate('/');
+                }
+              });
+            }
+          }
+        });
+      } else {
+        setError('You must be logged in to check your profile.');
+      }
+    };
+  
+    checkUserProfile();
+  }, [navigate]);
+  
   const nextStep = () => setCurrentStep((prevStep) => Math.min(totalSteps, prevStep + 1));
   const prevStep = () => setCurrentStep((prevStep) => Math.max(1, prevStep - 1));
   const updateFormData = (newData) => setFormData((prev) => ({ ...prev, ...newData }));
   
+    
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -76,35 +107,16 @@ const UserProfileForm = () => {
       }
     });
   };
-  
+
   return (
     <div className="container mx-auto p-5 min-h-screen py-32 px-8 max-w-md">
       <ProgressBar currentStep={currentStep} totalSteps={totalSteps} isLoading={isLoading} />
       {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
-        {currentStep === 1 && (
-          <PersonalDetails
-            formData={formData}
-            updateFormData={updateFormData}
-          />
-        )}
-        {currentStep === 2 && (
-          <LocationDetails formData={formData} setFormData={updateFormData} />
-        )}
-        {currentStep === 3 && (
-          <Preferences
-            formData={formData}
-            updateFormData={updateFormData}
-          />
-        )}
-        {currentStep === 4 && (
-  <UserProfilePhotos
-    profilePhotos={profilePhotos}
-    setProfilePhotos={setProfilePhotos}
-  />
-)}
-
-
+        {currentStep === 1 && <PersonalDetails formData={formData} updateFormData={updateFormData} />}
+        {currentStep === 2 && <LocationDetails formData={formData} setFormData={updateFormData} />}
+        {currentStep === 3 && <Preferences formData={formData} updateFormData={updateFormData} />}
+        {currentStep === 4 && <UserProfilePhotos profilePhotos={profilePhotos} setProfilePhotos={setProfilePhotos} />}
         <div className="flex justify-between mt-6">
           {currentStep > 1 && (
             <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-600" onClick={prevStep}>
@@ -117,7 +129,7 @@ const UserProfileForm = () => {
             </button>
           )}
           {currentStep === totalSteps && (
-            <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-600">
+            <button type="submit" className={`bg-green-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-600 ${isLoading || hasProfile ? 'cursor-not-allowed opacity-50' : ''}`} disabled={isLoading || hasProfile}>
               Submit
             </button>
           )}

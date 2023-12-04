@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Roles } from 'meteor/alanning:roles';
 import { Accounts } from 'meteor/accounts-base';
 import { PostsCollection } from '../collections/posts.collection';
 import { UserProfiles } from '../collections/UserProfiles';
@@ -140,75 +139,6 @@ Meteor.publish('userProfileData', function (userId) {
   }
 });
 
-// Server-side Meteor publication
-// Meteor.publish('userDataWithProfile', function (userId) {
-//   check(userId, String);
-
-//   if (!this.userId) {
-//     // Handle the case where the user is not logged in
-//     return this.ready();
-//   }
-
-//   const user = Meteor.users.find({ _id: userId }, {
-//     fields: {
-//       username: 1,
-//       status: 1,
-//       'profile.image': 1,
-//       'profile.bannerImage': 1,
-//     }
-//   });
-
-//   const userProfile = UserProfiles.find({ authorId: userId });
-
-//   // Only send the data when both cursors are ready
-//   if (user.cursor && userProfile.cursor) {
-//     return [user, userProfile];
-//   } else {
-//     // Handle the loading state on the client
-//     return this.ready();
-//   }
-// });
-
-
-// Server-side publication
-// Meteor.publish('userDataWithProfile', function (userId) {
-//   check(userId, String);
-//   if (!this.userId) {
-//     return this.ready();
-//   }
-//   if (this.userId !== userId && !Roles.userIsInRole(this.userId, ['admin'])) {
-//     // Optionally check if the user has the right to access the data
-//     return this.ready();
-//   }
-//   const user = Meteor.users.find({ _id: userId }, {
-//      fields: {
-//       username: 1,
-//       status: 1,
-//       'profile.image': 1,
-//       'profile.bannerImage': 1,
-//      } });
-//   const userProfile = UserProfiles.find({ userId: userId },
-//      { 
-//       fields: { 
-//         'firstName': 1,
-//         'lastName': 1,
-//         'birthDate': 1,
-//         'bodyHeight': 1,
-//         'biologicalGender': 1,
-//         'personalBio': 1,
-//         'lookingForGender': 1,
-//         'agePreferenceMin': 1,
-//         'agePreferenceMax': 1,
-//         'country': 1,
-//         'city': 1,
-//         'profilePhotos': 1
-//         } });
-//   if (!user || !userProfile) {
-//     return this.ready();
-//   }
-//   return [user, userProfile];
-// });
-
 Meteor.publish('profileData', function (userId) {
   check(userId, String);
 
@@ -289,6 +219,9 @@ Meteor.publish('search', function (searchTerm, limit = 20) {
       { username: { $regex: regex } },
       { 'emails.address': { $regex: regex } },
       { 'profile.telephone': { $regex: regex } },
+      { 'profile.age': { $regex: regex } }, // Include age search
+      { 'profile.country': { $regex: regex } }, // Include country search
+      { 'profile.city': { $regex: regex } }, // Include city search
     ],
   };
 
@@ -350,6 +283,7 @@ Meteor.publish('search', function (searchTerm, limit = 20) {
 
   this.ready();
 });
+
 Meteor.publish('singleUser', function (userId) {
   if (!userId) {
     throw new Meteor.Error('invalid-user', 'User not defined');
@@ -400,14 +334,63 @@ Meteor.publish('userDetails', function (userId) {
   return [cursor1, cursor2];
 });
 
-Meteor.publish('userProfileDetails', function (userId) {
-  check(userId, String);
 
+Meteor.publish('userProfileDetails', function (userId) {
+  // We check if the userId is a string, but we also handle the case where it might be undefined
+  if (typeof userId !== 'string') {
+    this.ready();
+    return;
+  }
+
+  // Now that we've handled the undefined case, we can safely assume userId is a string
+  const userProfile = UserProfiles.findOne({ authorId: userId });
+  if (!userProfile) {
+    this.ready();
+    return;
+  }
+
+  return UserProfiles.find({ authorId: userId });
+});
+// Server: publications.js
+// Server: publications.js
+
+Meteor.publish('userContacts', function () {
+  console.log('userContacts publication called');
+  console.log('Current userId:', this.userId); // Log the current userId
   if (!this.userId) {
-    // if the user is not logged in, do not publish anything
     return this.ready();
   }
 
-  // Correctly return a cursor
-  return UserProfiles.find({ authorId: userId });
+  // Find all user profiles except the current user's
+  // Assuming each userProfile document has a reference to the userId
+  return Meteor.users.find(
+    { _id: { $ne: this.userId } },
+    {
+      fields: {
+        username: 1, // Send the username
+        'profile.image': 1,
+        status: 1, // Send the profile image
+      },
+    }
+  );
 });
+
+// server/main.js
+
+// Define the 'userProfilesSearch' publication
+Meteor.publish('userProfilesSearch', function (searchQuery) {
+  // Your publication logic here to fetch user profiles based on the searchQuery
+  // Example: Fetch user profiles that match the search criteria
+  const searchResults = UserProfiles.find({
+    $or: [
+      { firstName: { $regex: searchQuery, $options: 'i' } },
+      { lastName: { $regex: searchQuery, $options: 'i' } },
+      { country: { $regex: searchQuery, $options: 'i' } },
+      { city: { $regex: searchQuery, $options: 'i' } },
+      // Add additional fields for matching here based on your schema
+    ],
+  });
+
+  return searchResults;
+});
+

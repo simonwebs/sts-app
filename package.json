@@ -2,7 +2,7 @@
   "name": "sts-app",
   "version": "1.0.0",
   "scripts": {
-    "start": "meteor --exclude-archs web.browser.legacy,web.cordova --settings settings.json",
+    "start": "METEOR_SETTINGS='$(cat settings.json)' meteor --exclude-archs web.browser.legacy,web.cordova",
     "quave-eslint": "eslint . --fix",
     "quave-prettier": "prettier --write \"**/*.js\"",
     "quave-check": "npm run quave-eslint && npm run quave-prettier",

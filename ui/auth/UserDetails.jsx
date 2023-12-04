@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTracker } from 'meteor/react-meteor-data';
 import { UserProfiles } from '../../api/collections/UserProfiles';
 import { Image } from 'cloudinary-react';
-import { FaEnvelope, FaUserCircle } from 'react-icons/fa';
+import { FaEnvelope, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 const formatDate = (dateString) => {
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -14,6 +14,7 @@ const UserDetails = () => {
   const cloud_name = 'swed-dev'; // Replace with your actual cloud name
 
   const { userId } = useParams();
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const { userProfile, isLoadingUserProfile } = useTracker(() => {
     const noDataAvailable = { userProfile: null, isLoadingUserProfile: true };
     if (!userId) return noDataAvailable;
@@ -31,17 +32,27 @@ const UserDetails = () => {
     return <div>Loading...</div>;
   }
 
-  const setProfileImage = (photoUrl) => {
-    Meteor.call('userProfiles.setProfileImage', userId, photoUrl, (error, result) => {
-      if (error) {
-        console.error('Error updating profile image:', error);
-      } else {
-        // Handle successful update, e.g., show a notification
-        console.log('Profile image updated successfully');
-      }
-    });
+  // const setProfileImage = (photoUrl) => {
+  //   Meteor.call('userProfiles.setProfileImage', userId, photoUrl, (error, result) => {
+  //     if (error) {
+  //       console.error('Error updating profile image:', error);
+  //     } else {
+  //       // Handle successful update, e.g., show a notification
+  //       console.log('Profile image updated successfully');
+  //     }
+  //   });
+  // };
+  const nextPhoto = () => {
+    setCurrentPhotoIndex((prevIndex) =>
+      prevIndex + 1 < userProfile.profilePhotos.length ? prevIndex + 1 : 0
+    );
   };
 
+  const prevPhoto = () => {
+    setCurrentPhotoIndex((prevIndex) =>
+      prevIndex - 1 >= 0 ? prevIndex - 1 : userProfile.profilePhotos.length - 1
+    );
+  };
   if (!userProfile) {
     console.error(`User profile not found for userId: ${userId}`);
     return <div>User profile not found.</div>;
@@ -68,8 +79,6 @@ const UserDetails = () => {
     <span className="block mt-1 text-sm text-gray-900 dark:text-white">{userProfile?.biologicalGender}</span>
     <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Body Height</span>
     <span className="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0">{userProfile.bodyHeight}</span>
-    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Personal Bio</span>
-    <span className="block mt-1 text-sm text-gray-900 dark:text-white">{userProfile.personalBio}</span>
     <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Looking For Gender</span>
     <span className="block mt-1 text-sm text-gray-900 dark:text-white">{userProfile.lookingForGender}</span>
     <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Minimum Age Preference</span>
@@ -89,38 +98,44 @@ const UserDetails = () => {
 
           </div>
           <div className="col-span-1">
-          <div className="p-4 md:p-6 lg:p-8 border-t">
-        <h3 className="text-lg font-semibold mb-2">Photos</h3>
-        <div className="grid grid-cols-2 gap-2">
-        {userProfile.profilePhotos.map((photo, index) => (
-          <div key={photo.photoId || index} className="relative">
-            <Image
-              cloud_name={cloud_name}
-              publicId={photo.photoUrl}
-              width="auto"
-              crop="scale"
-              quality="auto"
-              fetchFormat="auto"
-              secure
-              dpr="auto"
-              responsive
-              className="object-cover object-center w-full h-20 md:h-32 rounded-md"
-              alt="Profile"
-            />
-            <button
-              className="absolute bottom-2 right-2 p-2 rounded-full bg-blue-500 text-white"
-              onClick={() => setProfileImage(photo.photoUrl)}
-              title="Set as Profile Image"
-            >
-              <FaUserCircle />
-            </button>
-          </div>
-        ))}
-
-        </div>
+        <div className="p-4 md:p-6 lg:p-8 border-t">
+          <h3 className="text-lg font-semibold mb-2">Photos</h3>
+          {userProfile.profilePhotos.length > 0 && (
+            <div className="relative">
+              <Image
+                cloud_name={cloud_name}
+                publicId={userProfile.profilePhotos[currentPhotoIndex].photoUrl}
+                width="auto"
+                crop="scale"
+                quality="auto"
+                fetchFormat="auto"
+                secure
+                dpr="auto"
+                responsive
+                className="object-cover object-center w-full h-48 rounded-md"
+                alt="Profile"
+              />
+              <button
+                className="absolute top-1/2 left-2 transform -translate-y-1/2 p-2 rounded-full bg-blue-500/50 text-white"
+                onClick={prevPhoto}
+                title="Previous Photo"
+              >
+                <FaArrowLeft />
+              </button>
+              <button
+                className="absolute top-1/2 right-2 transform -translate-y-1/2 p-2 rounded-full bg-blue-500/50 text-white"
+                onClick={nextPhoto}
+                title="Next Photo"
+              >
+                <FaArrowRight />
+              </button>
             </div>
+          )}
+        </div>
           </div>
         </div>
+        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Personal Bio</span>
+      <span className="block mt-1 text-sm text-gray-900 dark:text-white">{userProfile.personalBio}</span>
       </div>
     </div>
   );

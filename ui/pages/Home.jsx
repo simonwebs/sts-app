@@ -1,10 +1,9 @@
 import React, { lazy, Suspense, memo } from 'react';
 import Connections from './Connections';
 import Features from './Features';
+import Explore from '../components/userProfile/Explore';
 const Hero = lazy(() => import('./Hero'));
-const Card = lazy(() => import('./album/Card'));
 const Testimonial = lazy(() => import('./Testimonial'));
-const Explore = lazy(() => import('../components/userProfile/Explore'))
 
 const Home = () => {
   return (
@@ -18,6 +17,9 @@ const Home = () => {
         </section>
         <section className="mt-10 mb-8" aria-label="Hero Section">
           <Features />
+        </section>
+        <section className="mt-10 mb-8" aria-label="Hero Section">
+          <Explore />
         </section>
         <section className="mt-7 mb-4" aria-label="Hero Section">
           <Testimonial />

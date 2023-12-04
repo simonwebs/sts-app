@@ -1,33 +1,44 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
 import { useTracker } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 import { Image, Transformation } from 'cloudinary-react';
 import TimeSince from '../components/TimeSince';
+import { PrivateMessages } from '../../api/collections/privateMessages.collection';
 import { UserProfiles } from '../../api/collections/UserProfiles';
 import UpdateProfileImage from '../pages/admin/updateData/UpdateProfileImage';
 import UpdateBannerImage from '../pages/admin/updateData/UpdateBannerImage';
+import ChatWindow from '../components/chat/ChatWindow';
 
 const ProfileHeader = () => {
   const { userId } = useParams();
-  const cloudName = 'swed-dev'; // Replace with your actual cloud name
+  const cloudName = 'swed-dev';
   const [imageVersion, setImageVersion] = useState(Date.now());
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [newMessage, setNewMessage] = useState(null);
+  const location = useLocation();
 
-  // Function to refresh the profile image
   const refreshProfileImage = () => {
     setImageVersion(Date.now());
   };
+
+  const closeChat = () => {
+    setIsChatOpen(false);
+  };
+
+  const openChat = () => {
+    setIsChatOpen(true);
+  };
+
   const { user, userProfile, isLoading, isCurrentUserProfile } = useTracker(() => {
     const noDataAvailable = { user: null, userProfile: null, isLoading: true, isCurrentUserProfile: false };
 
     if (!userId) {
-   //   console.log('No userId provided');
       return noDataAvailable;
     }
 
     const userSubscription = Meteor.subscribe('userDetails', userId);
     if (!userSubscription.ready()) {
-     // console.log('Subscription is not ready');
       return { ...noDataAvailable, isLoading: true };
     }
 
@@ -36,14 +47,42 @@ const ProfileHeader = () => {
     const isLoading = !user || !userProfile;
     const isCurrentUserProfile = Meteor.userId() === userId;
 
-    //console.log('User data:', user);
-    //console.log('UserProfile data:', userProfile);
-
     return { user, userProfile, isLoading, isCurrentUserProfile };
   }, [userId, imageVersion]);
 
-  //console.log('isLoading:', isLoading);
-  //console.log('isCurrentUserProfile:', isCurrentUserProfile);
+  const refreshProfileDetails = () => {
+    setImageVersion(Date.now());
+  };
+
+  useEffect(() => {
+    const messageSubscription = Meteor.subscribe('privateMessages', Meteor.userId(), userId);
+
+    const messageObserver = PrivateMessages.find(
+      {
+        $or: [
+          { senderId: Meteor.userId(), receiverId: userId },
+          { senderId: userId, receiverId: Meteor.userId() },
+        ],
+      },
+      { sort: { timestamp: -1 } }
+    ).observeChanges({
+      added: (id, message) => {
+        setNewMessage(message);
+      },
+    });
+
+    return () => {
+      messageSubscription.stop();
+      messageObserver.stop();
+    };
+  }, [userId]);
+
+  useEffect(() => {
+    if (newMessage) {
+      new Notification('New message', { body: newMessage.messageText });
+    }
+  }, [newMessage]);
+
   const isOnline = user?.status?.online ?? false;
 
   if (isLoading) {
@@ -51,33 +90,26 @@ const ProfileHeader = () => {
   }
 
   if (!userProfile) {
-   // console.error('User profile not found for userId:', userId);
     return <div>User profile not found.</div>;
   }
-  const refreshProfileDetails = () => {
-    // Force the useTracker to re-run by updating the state that it depends on
-    setImageVersion(Date.now());
-  };
-  // Check and log profile photos
- // console.log('Profile Photos:', userProfile.profilePhotos);
 
- const profileImageId = user?.profile?.image;
- const bannerImageId = user?.profile?.bannerImage ? user.profile.bannerImage.split('/upload/').pop() : null;
- const defaultBannerImage = "https://via.placeholder.com/150";
- const defaultProfileImage = "default_profile_image_public_id"; // Replace with your actual public ID if hosted on Cloudinary
+  const profileImageId = user?.profile?.image;
+  const bannerImageId = user?.profile?.bannerImage ? user.profile.bannerImage.split('/upload/').pop() : null;
+  const defaultBannerImage = "https://via.placeholder.com/150";
+  const defaultProfileImage = "https://via.placeholder.com/150";
 
- // Append the image version query parameter to force refresh
- const profileImageUrl = `${profileImageId || defaultProfileImage}?_v=${imageVersion}`;
+  const profileImageUrl = `${profileImageId || defaultProfileImage}?_v=${imageVersion}`;
 
- const userName = userProfile?.firstName || userProfile?.lastName || user?.username || 'Username not ready';
- 
+  const userName = userProfile?.firstName || userProfile?.lastName || user?.username || 'Username not ready';
+
+  const showChatButton = !isCurrentUserProfile && location.pathname !== '/own-profile';
+
   return (
     <div className="bg-gray-100 w-full dark:bg-gray-700 mt-16 py-2 px-1">
-      {/* Banner Image */}
       <div className="relative w-full h-56 overflow-hidden shadow-md">
         <Image
           cloudName={cloudName}
-          publicId={bannerImageId || defaultBannerImage} 
+          publicId={bannerImageId || defaultBannerImage || profileImageUrl} 
           fetchFormat="auto"
           quality="auto"
           secure={true}
@@ -95,9 +127,7 @@ const ProfileHeader = () => {
           </div>
         )}
       </div>
-      {/* Profile Image and Details */}
       <div className="flex flex-col justify-center items-center -mt-20 mb-4">
-        {/* Profile Image */}
         <div className="relative w-36 h-36 mx-auto">
           <Image
             cloudName={cloudName}
@@ -115,7 +145,7 @@ const ProfileHeader = () => {
           />
           {isCurrentUserProfile && (
             <div className="absolute -bottom-3 -right-3">
-            <UpdateProfileImage onImageUpdated={refreshProfileDetails} />
+              <UpdateProfileImage onImageUpdated={refreshProfileDetails} />
             </div>
           )}
         </div>
@@ -129,6 +159,17 @@ const ProfileHeader = () => {
           <TimeSince date={user.status.lastOnline} className="text-xs text-gray-500" />
         )}
       </div>
+      {showChatButton && (
+        <button
+          onClick={openChat}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+        >
+          Start Chat
+        </button>
+      )}
+      {isChatOpen && (
+        <ChatWindow selectedUser={user} onClose={closeChat} incomingMessages={[newMessage]} />
+      )}
     </div>
   );
 };

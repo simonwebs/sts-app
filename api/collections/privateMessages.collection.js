@@ -1,7 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-export const Messages = new Mongo.Collection('messages');
+export const PrivateMessages = new Mongo.Collection('privateMessages');
 
 const MessageSchema = new SimpleSchema({
   senderId: {
@@ -18,7 +18,7 @@ const MessageSchema = new SimpleSchema({
   'readBy.$': {
     type: String,
   },
-  message: {
+  messageText: {
     type: String,
     max: 2000,
   },
@@ -33,6 +33,14 @@ const MessageSchema = new SimpleSchema({
   'deletedBy.$': {
     type: String,
   },
+  likes: {
+    type: Array,
+    optional: true,
+    defaultValue: [],
+  },
+  'likes.$': {
+    type: String,
+  },
   createdAt: {
     type: Date,
     autoValue() {
@@ -43,4 +51,4 @@ const MessageSchema = new SimpleSchema({
   },
 });
 
-Messages.attachSchema(MessageSchema);
+PrivateMessages.attachSchema(MessageSchema);

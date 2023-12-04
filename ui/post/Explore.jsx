@@ -10,10 +10,10 @@ const Explore = () => {
   // Use useState at the beginning
   const [currentPage, setCurrentPage] = useState(1);
 
-  const cloud_name = 'cedar-christian-bilingual-school';
+  const cloud_name = 'swed-dev';
   const { posts, isLoading } = useTracker(() => {
     const postHandle = Meteor.subscribe('postsWithAuthors');
-    const fetchedPosts = PostsCollection.find({}).fetch();
+    const fetchedPosts = PostsCollection.find({}, { sort: { createdAt: -1 } }).fetch(); // Sort by createdAt in descending order
     const authorIds = fetchedPosts.map((post) => post.authorId);
     const authors = Meteor.users.find({ _id: { $in: authorIds } }).fetch();
     const postsWithAuthors = fetchedPosts.map((post) => {
@@ -26,6 +26,10 @@ const Explore = () => {
       isLoading: !postHandle.ready(),
     };
   });
+
+  // Display the two latest posts
+  const latestPosts = posts.slice(0, 2);
+
 
   if (isLoading) {
     return (

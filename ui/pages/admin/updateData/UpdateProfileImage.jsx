@@ -4,7 +4,6 @@ import { Meteor } from 'meteor/meteor';
 import { Dialog, Transition } from '@headlessui/react';
 import { MdAddAPhoto } from 'react-icons/md';
 import Cropper from 'react-cropper';
-import 'cropperjs/dist/cropper.css';
 
 const UpdateProfileImage = ({ onImageUpdated }) => {
   const [profileImage, setProfileImage] = useState(null);

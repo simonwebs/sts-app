@@ -113,6 +113,10 @@ Meteor.methods({
       throw new Meteor.Error('Upload failed', error.message);
     }
   },
+  'userProfiles.exists': function (userId) {
+    check(userId, String); // Make sure userId is a string to prevent potential injection attacks
+    return !!UserProfiles.findOne({ authorId: userId }); // Replace UserProfilesCollection with your actual collection
+  },
   'userProfiles.setProfileImage'(newImageUrl) {
     // Check the newImageUrl argument to ensure it is a string
     check(newImageUrl, String);

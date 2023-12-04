@@ -3,49 +3,43 @@ import React, { useEffect, useState } from 'react';
 const TimeSince = ({ date }) => {
   const [timeString, setTimeString] = useState('NA');
 
-  useEffect(() => {
+  const calculateTimeSince = (date) => {
     if (isNaN(Date.parse(date))) {
-      // If the date is not valid, don't start the interval.
-      setTimeString('NA');
-      return;
+      return 'NA';
     }
 
-    const intervalId = setInterval(() => {
-      const now = new Date();
-      const past = new Date(date);
-      const seconds = Math.floor((now - past) / 1000);
-      let interval = seconds / 31536000;
+    const now = new Date();
+    const past = new Date(date);
+    const seconds = Math.floor((now - past) / 1000);
+    
+    if (seconds < 0) {
+      return 'Future date';
+    }
 
-      if (interval > 1) {
-        setTimeString(Math.floor(interval) + 'yr');
-      } else {
-        interval = seconds / 2592000;
-        if (interval > 1) {
-          setTimeString(Math.floor(interval) + 'mo');
-        } else {
-          interval = seconds / 604800;
-          if (interval > 1) {
-            setTimeString(Math.floor(interval) + 'wk');
-          } else {
-            interval = seconds / 86400;
-            if (interval > 1) {
-              setTimeString(Math.floor(interval) + 'd');
-            } else {
-              interval = seconds / 3600;
-              if (interval > 1) {
-                setTimeString(Math.floor(interval) + 'hr');
-              } else {
-                interval = seconds / 60;
-                if (interval > 1) {
-                  setTimeString(Math.floor(interval) + 'm');
-                } else {
-                  setTimeString(Math.floor(seconds) + 's');
-                }
-              }
-            }
-          }
-        }
+    const intervals = [
+      { label: 'yr', seconds: 31536000 },
+      { label: 'mo', seconds: 2592000 },
+      { label: 'wk', seconds: 604800 },
+      { label: 'd', seconds: 86400 },
+      { label: 'hr', seconds: 3600 },
+      { label: 'm', seconds: 60 },
+      { label: 's', seconds: 1 }
+    ];
+
+    for (let i = 0; i < intervals.length; i++) {
+      const interval = intervals[i];
+      const count = Math.floor(seconds / interval.seconds);
+      if (count >= 1) {
+        return `${count}${interval.label}`;
       }
+    }
+
+    return 'Just now';
+  };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTimeString(calculateTimeSince(date));
     }, 1000);
 
     return () => clearInterval(intervalId);

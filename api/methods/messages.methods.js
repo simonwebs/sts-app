@@ -1,91 +1,126 @@
 import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 import { Messages } from '../collections/messages.collection';
-import { Conversations } from '../collections/Conversations';
-
-
-// Ensure index on participants for faster querying
-Conversations._ensureIndex({ participants: 1 });
-
-function generateConversationId() {
-  const chars = '23456789ABCDEFGHJKLMNPQRSTWXYZabcdefghijkmnopqrstuvwxyz';
-  let result = '';
-  for (let i = 0; i < 17; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-}
 
 Meteor.methods({
-  'messages.insert'(conversationId, text) {
-    check(conversationId, String);
-    check(text, String);
-
-    // Additional validation to check if the user is part of the conversation
-    const conversation = Conversations.findOne({ _id: conversationId, participants: this.userId });
-    if (!conversation) {
-      throw new Meteor.Error('not-authorized', 'You are not authorized to send messages in this conversation.');
-    }
-
-    // Additional validation to ensure message text length, etc.
-    if (text.length === 0) {
-      throw new Meteor.Error('invalid-message', 'You cannot send an empty message.');
-    }
-
-    try {
-      // Insert message logic here
-      const messageId = Messages.insert({
-        conversationId,
-        text,
-        createdAt: new Date(),
-        senderId: this.userId,
-        // ... other necessary fields
-      });
-      return messageId;
-    } catch (error) {
-      // Log the error server-side and throw a sanitized error to the client
-      console.error('Insert message error:', error);
-      throw new Meteor.Error('insert-failed', 'Failed to insert message');
-    }
-  },
-  getOrCreateConversation({ userId, otherUserId }) {
-    check(userId, String);
-    check(otherUserId, String);
-
-    if (!this.userId) {
-      throw new Meteor.Error('not-authorized', 'You must be logged in to perform this action.');
-    }
-
-    if (this.userId !== userId) {
-      throw new Meteor.Error('not-authorized', 'You cannot create a conversation with another user.');
-    }
-
-    // Check if there's an existing conversation between the two users
-    let conversation = Conversations.findOne({
-      participants: { $all: [userId, otherUserId] }
+  'messages.send': function (message) {
+    check(message, {
+      senderId: String,
+      receiverId: String,
+      message: String,
+      timestamp: Date,
     });
-
-    if (!conversation) {
-      // If not, create a new conversation
-      const conversationId = Conversations.insert({
-        participants: [userId, otherUserId],
-        createdAt: new Date(),
-        lastMessage: '',
-        lastMessageAt: null,
-      });
-      conversation = Conversations.findOne(conversationId);
+    if (!this.userId) {
+      throw new Meteor.Error('Not authorized.');
     }
 
-    // Fetch messages for the conversation
-    const messages = Messages.find({ conversationId: conversation._id }, {
-      sort: { createdAt: -1 },
-      limit: 50, // or any other limit you deem appropriate
-    }).fetch();
-
-    // Return the conversation ID and messages
-    return {
-      conversationId: conversation._id,
-      messages,
-    };
+    Messages.insert({
+      ...message,
+      timestamp: new Date(),
+    });
   },
-  // ...other Meteor methods
+  'messages.like' (messageId) {
+    check(messageId, String);
+    Messages.update(messageId, {
+      $inc: { likes: 1 },
+    });
+  },
+  'messages.deleteMessage'(messageId) {
+    check(messageId, String);
+
+    const message = Messages.findOne(messageId);
+
+    if (!message) {
+      throw new Meteor.Error('Message not found.');
+    }
+
+    // Check that user is authorized to delete the message
+    if (this.userId !== message.senderId) {
+      throw new Meteor.Error('Not authorized.');
+    }
+
+    Messages.remove(messageId);
+  },
+  'messages.unsendMessage'(messageId) {
+    check(messageId, String);
+
+    const message = Messages.findOne(messageId);
+
+    if (!message) {
+      throw new Meteor.Error('Message not found.');
+    }
+
+    // Check that user is authorized to unsend the message
+    if (this.userId !== message.senderId) {
+      throw new Meteor.Error('Not authorized.');
+    }
+
+    // Instead of completely deleting the message, we update it to show that it's been unsent.
+    Messages.update(messageId, {
+      $set: { unsent: true, content: "This message has been unsent." },
+    });
+  },
+ 'messages.updateReadBy'(messageId, userId) {
+    check(messageId, String);
+    check(userId, String);
+
+    // Ensure the user is logged in
+    if (!this.userId) {
+      throw new Meteor.Error('not-authorized');
+    }
+
+    // Ensure the user is the receiver of the message
+    const message = Messages.findOne(messageId);
+    if (message.receiverId !== userId) {
+      throw new Meteor.Error('not-authorized');
+    }
+
+    Messages.update(messageId, {
+      $addToSet: { readBy: userId },
+    });
+  },
+  'messages.delete': function (messageId) {
+    check(messageId, String);
+
+    // Again, the actual implementation will depend on your application
+    const message = Messages.findOne(messageId);
+    if (!message) {
+      throw new Meteor.Error('404', 'Message not found');
+    }
+
+    // This will delete the message from the database
+    Messages.remove(messageId);
+  },
+
+  'messages.forward': function (messageId) {
+    check(messageId, String);
+
+    const message = Messages.findOne(messageId);
+    if (!message) {
+      throw new Meteor.Error('404', 'Message not found');
+    }
+
+    // The actual forwarding functionality will depend on your application
+    // For example, you might add the message to a different conversation:
+    Messages.insert({
+      ...message,
+      conversationId: 'some-other-conversation-id',
+    });
+  },
+  'messages.fetch' (senderId, receiverId) {
+    // Check the arguments
+    check(senderId, String);
+    check(receiverId, String);
+    const { userId } = this;
+    if (!userId) {
+      throw new Meteor.Error('Access denied');
+    }
+    // Fetch the messages
+    return Messages.find({
+      $or: [
+        { senderId, receiverId },
+        { senderId: receiverId, receiverId: senderId },
+      ],
+    }, { sort: { timestamp: 1 } }).fetch();
+  },
 });

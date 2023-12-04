@@ -1,28 +1,32 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { Messages } from '../collections/messages.collection';
 
+if (Meteor.isClient) {
+  Meteor.subscribe('myMessages');
 
-Meteor.publish('messages.inConversation', function (conversationId) {
-    check(conversationId, String);
-  
-    if (!this.userId) {
-      return this.ready();
-    }
-  
-    // Further checks should be added to ensure the user is part of the conversation
-  
-    return Messages.find({ conversationId }, {
-      fields: Messages.publicFields,
-      sort: { createdAt: -1 },
-      limit: 50, // Implement pagination for larger conversations
-    });
+  Tracker.autorun(() => {
+    Messages.find({}).fetch();
   });
-  
-  // Public fields to be published
-  Messages.publicFields = {
-    conversationId: 1,
-    senderId: 1,
-    text: 1,
-    createdAt: 1,
-    readBy: 1,
-  };
+}
+
+if (Meteor.isServer) {
+  Meteor.publish('messages', function (otherUserId) {
+    const query = otherUserId
+      ? {
+          $or: [
+            { senderId: this.userId, receiverId: otherUserId },
+            { senderId: otherUserId, receiverId: this.userId },
+          ],
+        }
+      : {
+          $or: [
+            { senderId: this.userId },
+            { receiverId: this.userId },
+          ],
+        };
+        const messages = Messages.find(query);
+
+        return messages;
+      });
+}

@@ -7,7 +7,7 @@ import ErrorFallback from '../../components/ErrorFallback';
 import Header from '../../common/header/Header';
 import Footer from '../../common/footer/Footer';
 
-const InnerLayout = ({ children }) => {
+const InnerLayout = ({ children, currentUserId }) => {
   const { currentUser, isLoading } = useContext(UserRolesContext);
 
   if (isLoading) {
@@ -20,7 +20,9 @@ const InnerLayout = ({ children }) => {
 
   return (
     <>
-      {!shouldHideHeaderAndFooter && <Header />}
+      {!shouldHideHeaderAndFooter && (
+        <Header setSelectedUser={() => {}} currentUserId={currentUserId} />
+      )}
       {children}
       {!shouldHideHeaderAndFooter && <Footer />}
     </>

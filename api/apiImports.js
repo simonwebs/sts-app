@@ -9,7 +9,9 @@ import './collections/AlbumsCollection';
 import './collections/Analytics';
 import './collections/TransactionCollection';
 import './collections/CommentsCollection';
-
+import './collections/privateMessages.collection';
+import './collections/ChatRequestsCollection';
+import './collections/notifications.collection';
 import './collections/VideosCollection';
 import './collections/SettingsCollection';
 import './collections/AdminsCollection';
@@ -30,7 +32,11 @@ import './methods/VideosMethods';
 import './methods/SettingsMethods';
 import './methods/ adminsMethods'
 import './methods/calls.methods';
+import './methods/FriendRequestsMethods';
 import './methods/messages.methods';
+import './methods/PrivateMessages.methods';
+import './methods/chatRequestsMethods';
+import './methods/notifications.methods'
 
 import './publications/HistoriesPublication';
 import './publications/posts.publication';
@@ -47,5 +53,8 @@ import './publications/SettingsPublication';
 import './publications/rolesPublication';
 import './publications/SearchPublication';
 import './publications/calls.publication';
+import './publications/FriendRequestsPublication'
 import './publications/messages.publication';
+import './publications/chatRequestsPublication';
+import './publications/PrivateMessages.publication';
 

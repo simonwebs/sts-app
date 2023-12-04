@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Bars3Icon } from '@heroicons/react/20/solid';
 import GuestSearch from './GuestSearch';
 import { NavLink } from 'react-router-dom';
-import UserMenu from '../../../common/navbar/UserMenu';
+import UserMenu from '../../../common/header/UserMenu';
 
 const GuestHeader = ({ toggleSidebar }) => {
   const [theme, setTheme] = useState('light');

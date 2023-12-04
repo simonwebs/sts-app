@@ -1,3 +1,4 @@
+// ConfirmEmail.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Meteor } from 'meteor/meteor';
@@ -5,50 +6,41 @@ import { Meteor } from 'meteor/meteor';
 const ConfirmEmail = () => {
   const { token } = useParams();
   const navigate = useNavigate();
-  const [confirmationStatus, setConfirmationStatus] = useState(null);
+  const [confirmationStatus, setConfirmationStatus] = useState('pending');
 
   useEffect(() => {
     if (!token) {
+      console.log('No token provided'); // Debugging
       setConfirmationStatus('invalid-token');
       return;
     }
 
-    Meteor.call('newsletter.confirm', token, (error, result) => {
+    Meteor.call('newsletter.confirm', token, (error, response) => {
       if (error) {
-        console.error('Confirmation failed:', error);
+        console.log('Confirmation error:', error); // Debugging
         setConfirmationStatus('failed');
       } else {
-        console.log('Confirmation status:', result.status);
-        setConfirmationStatus(result.status);
+        console.log('Confirmation response:', response); // Debugging
+        setConfirmationStatus(response.status);
+        if (response.status === 'confirmed' || response.status === 'already-confirmed') {
+          navigate('/', { replace: true });
+        }
       }
     });
-  }, [token]);
+  }, [token, navigate]);
 
-  const redirectToHome = () => {
-    navigate('/');
+  const messageMap = {
+    'pending': 'Confirming your email...',
+    'confirmed': 'Thank you for confirming your email address.',
+    'already-confirmed': 'This email is already confirmed.',
+    'failed': 'Oops! Something went wrong while confirming your email. Please try again later.',
+    'invalid-token': 'Invalid token provided. Check your email for the correct link.'
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <div className="bg-white rounded-lg p-8 w-full max-w-md shadow-md">
-        {confirmationStatus === 'confirmed' ? (
-          <div className="text-center">
-            <h1 className="text-2xl font-semibold mb-4">Email Confirmed</h1>
-            <p className="text-gray-700 mb-4">Thank you for confirming your email address. You are now successfully subscribed to our newsletter.</p>
-            <button 
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              onClick={redirectToHome}
-            >
-              Go to Home
-            </button>
-          </div>
-        ) : (
-          <div className="text-center">
-            <h1 className="text-2xl font-semibold mb-4">Email Confirmation Failed</h1>
-            <p className="text-gray-700 mb-4">Oops! Something went wrong while confirming your email. Please try again later.</p>
-          </div>
-        )}
-      </div>
+    <div className="email-confirmation">
+      <h1>Email Confirmation</h1>
+      <p>{messageMap[confirmationStatus]}</p>
     </div>
   );
 };

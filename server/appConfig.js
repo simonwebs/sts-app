@@ -19,7 +19,7 @@ Meteor.startup(() => {
   }));
 
   // Setup a middleware for CORS
-  const allowedOrigins = ['https://www.cedarcbs.com', 'https://cedarcbs.com'];
+  const allowedOrigins = ['https://www.thatconnect.com', 'https://thatconnect.com'];
   WebApp.rawConnectHandlers.use((req, res, next) => {
     const origin = req.headers.origin || req.headers.referer;
     if (allowedOrigins.includes(origin)) {

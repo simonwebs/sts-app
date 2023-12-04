@@ -1,44 +1,36 @@
 import React, { useState } from 'react';
 import { Meteor } from 'meteor/meteor';
 
-const ChatComponent = ({ messages, conversationId }) => {
+const ChatComponent = ({ messages, conversationId, isModalOpen, toggleModal }) => {
   const [message, setMessage] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to handle modal visibility
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const trimmedMessage = message.trim();
-    if (!trimmedMessage) return; // Prevent sending empty messages
-  
-    // Ensure conversationId is valid
-    if (typeof conversationId !== 'string' || !conversationId) {
-      console.error('Invalid conversationId:', conversationId);
+    if (!trimmedMessage) {
+      console.error('Cannot send an empty message.');
       return;
     }
-  
-    // Insert message into the conversation
-    Meteor.call('messages.insert', conversationId, trimmedMessage, (error) => {
+    if (!conversationId) {
+      console.error('Cannot send a message without a conversationId.');
+      return;
+    }
+
+    // Assuming you have a method to send a message, call it here.
+    Meteor.call('sendMessage', { conversationId, text: trimmedMessage }, (error) => {
       if (error) {
-        console.error('Error inserting message:', error);
+        console.error('Error sending message:', error);
       } else {
-        setMessage(''); // Clear input field after sending message
+        // Clear the message input field after sending.
+        setMessage('');
       }
     });
-  };
-
-  // Toggle modal visibility
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
-  };
+  }
 
   return (
     <>
-      <button onClick={toggleModal} className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-        Open Chat
-      </button>
-
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-25 flex justify-center items-center">
+        <div className="fixed inset-0 bg-black bg-opacity-25 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-medium">Chat</h3>
@@ -63,12 +55,14 @@ const ChatComponent = ({ messages, conversationId }) => {
                 className="flex-grow p-2 border rounded focus:ring focus:ring-blue-300 transition ease-in-out duration-150"
                 placeholder="Type a message..."
               />
-              <button
-                type="submit"
-                className="bg-blue-500 text-white p-2 rounded font-semibold focus:outline-none hover:bg-blue-600 transition ease-in-out duration-150"
-              >
-                Send
-              </button>
+            <button
+  type="submit"
+  className="bg-blue-500 text-white p-2 rounded font-semibold focus:outline-none hover:bg-blue-600 transition ease-in-out duration-150"
+  disabled={!conversationId} // Disable the button if conversationId is missing
+>
+  Send
+</button>
+
             </form>
           </div>
         </div>

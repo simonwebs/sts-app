@@ -1,9 +1,9 @@
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-export const FriendRequestsCollection = new Mongo.Collection('friendRequests');
+export const ChatRequestsCollection = new Mongo.Collection('chatRequests');
 
-const FriendRequestSchema = new SimpleSchema({
+const ChatRequestSchema = new SimpleSchema({
   fromUserId: String,
   toUserId: String,
   status: {
@@ -19,4 +19,4 @@ const FriendRequestSchema = new SimpleSchema({
   }
 });
 
-FriendRequestsCollection.attachSchema(FriendRequestSchema);
+ChatRequestsCollection.attachSchema(ChatRequestSchema);

@@ -1,7 +1,8 @@
 {
   "public": {
     "agora": {
-      "appId": "b8fc7980fdba40ee90d1d08f6535386a"
+      "appId": "b8fc7980fdba40ee90d1d08f6535386a",
+      "googleAnalyticsId": "G-36953T552C"
     }
   },
   "private": {
@@ -31,12 +32,12 @@
   "prerenderToken": {
     "token": "1rhfqnOdNMRfaJ3jYT4p",
     "adaptiveType": "mobile",
-    "query": "cedarcbs.com/path",
-    "exactMatch": "https://www.cedarcbs.com/path",
+    "query": "thatconnect.com/path",
+    "exactMatch": "https://www.thatconnect.com/path",
     "start": 0,
     "urls": [
-      "https://www.cedarcbs.com/url/to/recache",
-      "https://www.cedarcbs.com/url/to/recache2",
+      "https://www.thatconnect.com/url/to/recache",
+      "https://www.thatconnect.com/url/to/recache2",
       "https://www.sitemaps.org/sitemap.xml"
     ]
   },

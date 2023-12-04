@@ -23,7 +23,7 @@
       "API_SECRET": "NqgWjqg6ANiehloQ0N6Zwm5hUy0"
     }
   },
-  "ROOT_URL": "http://localhost:3000/",
+  "ROOT_URL": "https://www.thatconnect.meteorapp.com",
   "galaxy.meteor.com": {
     "env": {
       "MONGO_URL": "mongodb+srv://exdiconwebs:Klegecomfort1977@cluster0.p431cwx.mongodb.net/we-connect?retryWrites=true&w=majority"

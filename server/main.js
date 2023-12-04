@@ -34,7 +34,7 @@ Meteor.startup(() => {
 
   Meteor.startup(() => {
   // Set up email
-  process.env.MAIL_URL = process.env.SMTP_URL || 'smtp://username:password@smtp.thatconnect.com:587';
+  process.env.MAIL_URL = process.env.SMTP_URL || 'smtp://username:password@smtp.thatconnect.meteorapp.com:587';
   Meteor.settings?.public?.appInfo?.name || process.env.ROOT_URL;
 
     try {

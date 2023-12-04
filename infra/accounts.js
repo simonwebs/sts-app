@@ -99,7 +99,7 @@ Meteor.startup(() => {
         clientId: googleClientId,
         secret: googleSecret,
         loginStyle: 'popup',
-        redirectUri: 'http://localhost:3000/_oauth/google',
+        redirectUri: 'https://thatconnect.meteorapp.com//_oauth/google',
         requestPermissions: ['profile', 'email'],
       },
     }

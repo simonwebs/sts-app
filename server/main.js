@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { PostsCollection } from '../api/collections/posts.collection';
-import $ from 'jquery'; 
 
 import './appConfig';
 import './routes';
@@ -16,21 +15,6 @@ import '../api/publications/usersPublication';
 import '../api/collections/Images';
 import '../api/methods/emailMagicMethods';
 
-
-Meteor.startup(() => {
-  if (Meteor.isClient) {
-    const googleAnalyticsId = Meteor.settings.public.googleAnalyticsId;
-
-    $.getScript(`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`, function() {
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-      gtag('config', googleAnalyticsId);
-    });
-  }
-});
 
   Meteor.startup(() => {
   // Set up email

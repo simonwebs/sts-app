@@ -7,7 +7,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Image } from 'cloudinary-react';
 import { PrivateMessages } from '../../api/collections/privateMessages.collection';
 
-const cloudName = 'swed-dev'; // Replace with your actual Cloudinary cloud name
+const cloudName = 'swed-dev';
 
 const getLatestMessages = (currentUserId, users) => {
   const latestMessages = [];

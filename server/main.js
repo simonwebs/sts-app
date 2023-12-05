@@ -51,10 +51,10 @@ Meteor.publish(null, function () {
 
 Meteor.publish('userRoles', function () {
   if (!this.userId) {
-    console.log('Publishing details for student ID: null');
+  // console.log('Publishing details for student ID: null');
     return this.ready();
   }
 
-  console.log('Publishing details for student ID:', this.userId);
+ // console.log('Publishing details for student ID:', this.userId);
   return Meteor.users.find({ _id: this.userId }, { fields: { roles: 1 } });
 });

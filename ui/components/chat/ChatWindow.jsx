@@ -22,16 +22,12 @@ const ChatWindow = ({ className, selectedUser, onClose }) => {
       return;
     }
 
-    console.log('Sending message:', currentMessage);
-
     const newMessage = {
       senderId: Meteor.userId(),
       receiverId: selectedUser._id,
       messageText: currentMessage,
       timestamp: new Date(),
     };
-
-    console.log('New message object:', newMessage);
 
     try {
       Meteor.call('privateMessages.send', newMessage, (error) => {
@@ -106,7 +102,6 @@ const ChatWindow = ({ className, selectedUser, onClose }) => {
       <div className="chat-modal bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center">
-            {/* Display sender's profile image */}
             <Image
               cloudName="swed-dev"
               publicId={selectedUser?.profile?.image || 'https://via.placeholder.com/150'}
@@ -118,7 +113,7 @@ const ChatWindow = ({ className, selectedUser, onClose }) => {
               dpr="auto"
               responsive={true}
               className="w-8 h-8 rounded-full mr-2"
-              alt={`${selectedUser?.username}'s profile`}
+              alt={`${selectedUser?.username || 'User'}'s profile`}
             />
           </div>
 

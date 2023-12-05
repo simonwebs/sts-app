@@ -355,8 +355,8 @@ Meteor.publish('userProfileDetails', function (userId) {
 // Server: publications.js
 
 Meteor.publish('userContacts', function () {
-  console.log('userContacts publication called');
-  console.log('Current userId:', this.userId); // Log the current userId
+  // console.log('userContacts publication called');
+  // console.log('Current userId:', this.userId); // Log the current userId
   if (!this.userId) {
     return this.ready();
   }

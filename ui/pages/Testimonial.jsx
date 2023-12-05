@@ -30,7 +30,7 @@ const testimonials = [
 
 const TestimonialCard = ({ testimonial }) => {
   return (
-    <figure className="flex flex-col items-center p-6 space-y-6 rounded-xl bg-white dark:bg-gray-800 shadow-lg transition duration-300 ease-in-out hover:scale-105 hover:shadow-2xl">
+    <figure className="flex flex-col items-center p-6 space-y-6 rounded-xl bg-white dark:bg-gray-700 shadow-lg transition duration-300 ease-in-out hover:scale-105 hover:shadow-2xl">
       <img
         className="w-20 h-20 rounded-full"
         src={testimonial.author.imageUrl}

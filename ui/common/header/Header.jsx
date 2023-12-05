@@ -209,7 +209,7 @@ const Header = ({ theme, profileUserId }) => {
                 alt={post.caption}
                 loading="lazy"
                 className="aspect-[2/1] w-full rounded-lg bg-gray-100 object-cover sm:aspect-[16/9] sm:h-32 lg:h-auto"
-              />
+/>
               <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-gray-900/10" />
             </div>
             <div>

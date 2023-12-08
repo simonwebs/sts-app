@@ -20,7 +20,7 @@ const UserProfileSchema = new SimpleSchema({
   },
   profileCreatedAt: {
     type: Date,
-    autoValue() {
+    autoValue () {
       if (this.isInsert) {
         return new Date();
       }
@@ -43,11 +43,11 @@ const UserProfileSchema = new SimpleSchema({
   },
   birthDate: {
     type: String,
-    optional: true,  // Assuming date is stored as an ISO string
+    optional: true, // Assuming date is stored as an ISO string
   },
   bodyHeight: {
     type: String,
-    optional: true,  // Stored as a string to match form data
+    optional: true, // Stored as a string to match form data
   },
   biologicalGender: {
     type: String,

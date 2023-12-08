@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { Link } from 'react-router-dom';
 import debounce from 'lodash/debounce';
+import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
 import { UserProfiles } from '../../../api/collections/UserProfiles'; // Import the UserProfiles collection
 
@@ -39,7 +40,7 @@ const UserSearch = () => {
 
     setSuggestions(searchResults);
   }, [searchQuery]);
-  
+
   const handleSearchChange = (e) => {
     const value = e.target.value;
     debouncedSearch(value);
@@ -52,13 +53,12 @@ const UserSearch = () => {
     <div className=" relative shadow-3xl">
      <button
   aria-label="Toggle Search"
-  className="flex items-center px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white hover:bg-opacity-75 transition duration-300 ml-5"
+  className="flex items-center px-3 py-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white hover:bg-opacity-75 transition duration-300 ml-3"
   onClick={() => setSearchOpen(!searchOpen)}
 >
   <div className="p-1 border rounded-full">
     <MagnifyingGlassIcon className="h-5 w-5 text-gray-700 dark:text-gray-100" />
   </div>
-  <span className="text-gray-700 dark:text-gray-100 sm:hidden">Search</span>
 </button>
 
      {searchOpen && (
@@ -70,14 +70,14 @@ const UserSearch = () => {
                 <input
                   autoFocus
                   type="text"
-                  aria-label="Search" 
+                  aria-label="Search"
                   placeholder="Type and search..."
                   className="w-full py-2 px-4 shadow-sm rounded-xl bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-700 focus:border-indigo-500 dark:focus:border-indigo-300 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-700 focus:ring-opacity-50 dark:text-white dark:placeholder-gray-400 pl-10"
                   value={searchQuery}
                   onChange={handleSearchChange}
                 />
                 <button
-  aria-label="Submit Search" 
+  aria-label="Submit Search"
   type="submit"
   className="absolute inset-y-0 right-0 flex items-center px-4 rounded-r-full bg-transparent"
 >
@@ -86,27 +86,30 @@ const UserSearch = () => {
   </div>
 </button>
               </div>
-              {suggestions.length > 0 && searchQuery.length > 0 ? (
+              {suggestions.length > 0 && searchQuery.length > 0
+                ? (
                 <ul className="list-disc pl-6 text-gray-800 dark:text-gray-200 mt-4">
                   {suggestions.map((result) => (
                     <li key={result._id}>
-                      <Link
-                        to={`/user/${result._id}`} // Adjust the link accordingly
-                        className="hover:underline text-gray-700 dark:text-gray-200"
-                        onClick={() => setSearchOpen(false)}
-                      >
-                        <p className="truncate w-64">{`${result.firstName} ${result.lastName}`}</p>
-                      </Link>
+                     <Link
+  to={`/user/${result._id}`}
+  className="hover:underline text-gray-700 dark:text-gray-200"
+  onClick={() => setSearchOpen(false)}
+>
+  <p className="truncate w-64">{`${result.firstName} ${result.lastName}`}</p>
+</Link>
+
                     </li>
                   ))}
                 </ul>
-              ) : (
+                  )
+                : (
                 <p className="text-gray-600 dark:text-gray-400 mt-4">No results found.</p>
-              )}
+                  )}
             </div>
           </div>
         </div>
-      )}
+     )}
     </div>
   );
 };

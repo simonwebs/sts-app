@@ -70,11 +70,10 @@ const LoginPage = () => {
           // Redirect to the desired route upon successful login
           navigate(RoutePaths.USER_PROFILE_FORM);
         }
-      }
+      },
     );
   };
-  
-  
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-900">
       <div className="w-full max-w-md p-6 bg-white dark:bg-gray-700 rounded-lg shadow-lg transform transition duration-300 hover:scale-105">
@@ -91,7 +90,7 @@ const LoginPage = () => {
         <div className="space-y-4">
       <button
         className="flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-300"
-        onClick={loginWithGoogle} 
+        onClick={loginWithGoogle}
       >
         {/* Google SVG icon */}
         <svg className="mr-2" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 48 48">
@@ -102,7 +101,7 @@ const LoginPage = () => {
           <path fill="none" d="M0 0h48v48H0z"/>
         </svg>   Login with google
 </button>
-      </div> 
+      </div>
       </div>
     </div>
   );

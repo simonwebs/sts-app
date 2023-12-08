@@ -62,7 +62,7 @@ livedata@1.0.18
 localstorage@1.2.0
 logging@1.3.2
 matb33:collection-hooks@1.3.0
-mdg:seo@3.5.0
+mdg:seo@3.5.1
 mdg:validated-method@1.3.0
 mdg:validation-error@0.5.1
 meteor@1.11.3

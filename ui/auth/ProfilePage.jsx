@@ -5,7 +5,7 @@ import { UserProfiles } from '../../api/collections/UserProfiles';
 import { Meteor } from 'meteor/meteor';
 import UserDetails from './UserDetails';
 import ProfileHeader from './ProfileHeader';
-import UserList from './UserList';
+import MatchList from './MatchList';
 
 const ProfilePage = () => {
   const { userId } = useParams();
@@ -14,7 +14,7 @@ const ProfilePage = () => {
     const subscription = Meteor.subscribe('userDetails', userId);
     if (subscription.ready()) {
       const user = Meteor.users.findOne({ _id: userId });
-      const userProfile = UserProfiles.findOne({ userId: userId });
+      const userProfile = UserProfiles.findOne({ userId });
       return { userProfileData: { user, userProfile }, isLoading: false };
     }
     return noDataAvailable;
@@ -50,7 +50,7 @@ const ProfilePage = () => {
                 <h2 className="sr-only" id="section-2-title">Section title</h2>
                 <div className="overflow-hidden rounded-lg bg-white shadow">
                   <div className="p-6">
-                  <UserList />
+                  <MatchList />
                   </div>
                 </div>
               </section>

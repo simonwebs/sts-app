@@ -66,31 +66,31 @@ Meteor.methods({
     }
   },
   // Server-side method to handle a like action
-'userProfiles.like': function (profileId) {
-  check(profileId, String);
+  'userProfiles.like': function (profileId) {
+    check(profileId, String);
 
-  if (!this.userId) {
-    throw new Meteor.Error('not-authorized', 'You must be logged in to like a profile.');
-  }
+    if (!this.userId) {
+      throw new Meteor.Error('not-authorized', 'You must be logged in to like a profile.');
+    }
 
-  const userProfile = UserProfiles.findOne({ _id: profileId });
+    const userProfile = UserProfiles.findOne({ _id: profileId });
 
-  if (!userProfile) {
-    throw new Meteor.Error('profile-not-found', 'Profile not found.');
-  }
+    if (!userProfile) {
+      throw new Meteor.Error('profile-not-found', 'Profile not found.');
+    }
 
-  // Prevent users from liking a profile more than once
-  if (userProfile.likedByUsers.includes(this.userId)) {
-    throw new Meteor.Error('already-liked', 'You have already liked this profile.');
-  }
+    // Prevent users from liking a profile more than once
+    if (userProfile.likedByUsers.includes(this.userId)) {
+      throw new Meteor.Error('already-liked', 'You have already liked this profile.');
+    }
 
-  // Add the current user's ID to the likedByUsers array
-  UserProfiles.update(profileId, {
-    $push: { likedByUsers: this.userId }
-  });
+    // Add the current user's ID to the likedByUsers array
+    UserProfiles.update(profileId, {
+      $push: { likedByUsers: this.userId },
+    });
 
-  return 'Profile liked successfully.';
-},
+    return 'Profile liked successfully.';
+  },
   'users.uploadProfileImage': async function (base64Image) {
     check(base64Image, String);
 
@@ -117,7 +117,7 @@ Meteor.methods({
     check(userId, String); // Make sure userId is a string to prevent potential injection attacks
     return !!UserProfiles.findOne({ authorId: userId }); // Replace UserProfilesCollection with your actual collection
   },
-  'userProfiles.setProfileImage'(newImageUrl) {
+  'userProfiles.setProfileImage' (newImageUrl) {
     // Check the newImageUrl argument to ensure it is a string
     check(newImageUrl, String);
 
@@ -129,9 +129,11 @@ Meteor.methods({
     // Update the user's profile image
     const result = UserProfiles.update(
       { authorId: this.userId }, // Ensuring the operation is performed on the logged-in user's profile
-      { $set: { 'profilePhotos.$.isProfilePhoto': false }, // Reset isProfilePhoto for all
-        $set: { 'profilePhotos.$[elem].isProfilePhoto': true } }, // Set isProfilePhoto for the chosen one
-      { arrayFilters: [{ "elem.photoUrl": newImageUrl }] } // Use arrayFilters to identify the correct photo
+      {
+        $set: { 'profilePhotos.$.isProfilePhoto': false }, // Reset isProfilePhoto for all
+        $set: { 'profilePhotos.$[elem].isProfilePhoto': true },
+      }, // Set isProfilePhoto for the chosen one
+      { arrayFilters: [{ 'elem.photoUrl': newImageUrl }] }, // Use arrayFilters to identify the correct photo
     );
 
     // If the update operation didn't affect any documents, throw an error

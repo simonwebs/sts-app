@@ -6,7 +6,7 @@ import { Roles } from 'meteor/alanning:roles';
 import { UsersCollection } from '../api/collections/UsersCollection'; // Adjust the import path as needed
 
 // Helper function to get the name for the user
-function getNameFromUser(user) {
+function getNameFromUser (user) {
   if (user.services?.google?.given_name) {
     return `${user.services.google.given_name}, ${user.telephone || ''}`;
   }
@@ -23,14 +23,14 @@ Accounts.emailTemplates.enrollAccount.subject = (user) => {
 
 // Reset password template setup
 Accounts.emailTemplates.resetPassword = {
-  subject() {
+  subject () {
     return 'Reset Your Password';
   },
-  text(user, url) {
+  text (user, url) {
     const username = getNameFromUser(user);
     return `Hello ${username},\n\nTo reset your password, simply click the link below:\n\n${url}\n\nThanks,\nThe Cedar Christian Bilingual School Team`;
   },
-  html(user, url) {
+  html (user, url) {
     const username = getNameFromUser(user);
     return `Hello ${username},<br/><br/>To reset your password, simply click the link below:<br/><br/><a href="${url}">${url}</a><br/><br/>Thanks,<br/>The Cedar Christian Bilingual School Team`;
   },
@@ -39,11 +39,9 @@ Accounts.emailTemplates.resetPassword = {
 // Overwrite the password reset URL
 Accounts.urls.resetPassword = (token) => Meteor.absoluteUrl(`${RoutePaths.RESET_PASSWORD.substring(1)}/${token}`);
 
-
-
 Accounts.onCreateUser((options, user) => {
   user.profile = options.profile || {};
- // Set a default placeholder profile image if one isn't provided
+  // Set a default placeholder profile image if one isn't provided
   user.profile.image = user.profile.image || 'https://via.placeholder.com/150';
 
   // Here, you need to add additional code to handle the username generation if it's not provided
@@ -73,7 +71,6 @@ Accounts.onCreateUser((options, user) => {
   return user;
 });
 
-
 // Login and Logout hooks to update user status
 Accounts.onLogin(({ user }) => {
   Meteor.users.update(user._id, { $set: { 'status.online': true } });
@@ -99,10 +96,10 @@ Meteor.startup(() => {
         clientId: googleClientId,
         secret: googleSecret,
         loginStyle: 'popup',
-        redirectUri: 'https://thatconnect.meteorapp.com//_oauth/google',
+        redirectUri: 'https://thatconnect.meteorapp.com/_oauth/google',
         requestPermissions: ['profile', 'email'],
       },
-    }
+    },
   );
 
   // Facebook OAuth configuration
@@ -115,7 +112,7 @@ Meteor.startup(() => {
           appId: facebookAppId,
           secret: facebookSecret,
         },
-      }
+      },
     );
   }
 });

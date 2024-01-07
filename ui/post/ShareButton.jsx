@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 
 const ShareButton = ({ postId }) => {
   const [shareCount, setShareCount] = useState(0);
-  const postUrl = `https://www.cedarcbs.com/post/${postId}`;
+  const postUrl = `https://www.thatconnect.meteorapp.com.com/post/${postId}`;
 
   useEffect(() => {
     if (postId) {
@@ -18,19 +18,18 @@ const ShareButton = ({ postId }) => {
       });
     }
   }, [postId]);
-  
 
   const handleShareClick = () => {
     // Increment share count optimistically
     setShareCount(prevCount => prevCount + 1);
-  
+
     Meteor.call('posts.incrementShareCount', postId, (error) => {
       if (error) {
         console.error('Error incrementing share count:', error);
         setShareCount(prevCount => prevCount - 1); // Revert if there's an error
       }
     });
-  
+
     // Updated confirmation dialog for sharing with single link
     Swal.fire({
       title: 'Share this post',
@@ -48,7 +47,7 @@ const ShareButton = ({ postId }) => {
       }
     });
   };
-  
+
   return (
     <button onClick={handleShareClick} className="share-button">
       <FaShare />

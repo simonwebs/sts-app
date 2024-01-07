@@ -7,7 +7,7 @@ export const RoutePaths = {
   RESET_PASSWORD: '/reset-password',
   PRIVACY: '/privacy',
   TERM_AND_CONDITIONS: '/terms-and-conditions',
-  
+
   // Content-related routes
   NEWS: '/news',
   POST: '/post',
@@ -17,20 +17,20 @@ export const RoutePaths = {
   CATEGORY: '/explore',
   CONTACT_FORM: '/contact-form',
   CHAT_REQUESTS_COMPONENT: '/chat-request',
+  SINGLES: '/singles',
 
   // User profile and settings
   PROFILE_PAGE: '/profile',
   USER_PROFILE_FORM: '/profile-form',
-  SETTINGS: '/settings',
+  SETTINGS_PAGE: '/settings',
   SETTING_PAGE: '/settings',
   USER_CONTACT: '/user-contact',
-  
-  // User actions
+  PROFILE_COMPLETION_MESSAGE: '/profile-complete',
   CONFIRM_EMAIL: '/confirm-email',
   NEWSLETTER: '/newsletter',
-  SEARCH: '/search',
+  USER_SEARCH: '/user-search',
   USER_MATCHES: '/user-matches',
-  
+
   // Admin routes
   ADMIN_HOME: '/admin-home',
   ADMIN_DASHBOARD: '/admin-dashboard',
@@ -40,7 +40,6 @@ export const RoutePaths = {
   ADMIN_CARD: '/admin-card',
   NEW_POST_FORM: '/new-post',
 
-  
   // Special pages
   HEALTH: '/health',
   SOCIAL: '/social',
@@ -48,12 +47,12 @@ export const RoutePaths = {
   GOSPEL: '/gospel',
   LETS_TALK: '/lets-talk',
   PRICE_PAGE: '/price-page',
-
+  DISCOVER: '/discover',
   // Analytics and transactions
   MAIN_ANALYTICS: '/main-analytics',
   TRANSACTION_LIST: '/transaction-list',
   TRANSACTION_CHART: '/transaction-chart',
-  
+
   // Forms and editing
   ALBUM_FORM: '/album-form',
   POST_EDIT_COMPONENT: '/post-edit',
@@ -61,7 +60,7 @@ export const RoutePaths = {
   CHAT_WINDOW: '/chat-window',
   // Guest routes
   GUEST_DASHBOARD: '/guest-dashboard',
-  
+
   // Remove actions
   REMOVE_POST: '/remove-post',
   REMOVE_ALBUM: '/remove-album',

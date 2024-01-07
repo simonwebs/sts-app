@@ -24,6 +24,11 @@ import Explore from '../../components/userProfile/Explore';
 import LetsTalk from '../../pages/letsTalk/LetsTalk';
 import ConfirmEmail from '../../components/ConfirmEmail';
 import TermsAndConditions from '../../pages/TermAndCondition';
+import { FormProvider } from '../../components/userProfile/FormContext';
+import ProfileCompletionMessage from '../../components/userProfile/ProfileCompletionMessage';
+import Discover from '../../pages/Discover';
+import SettingsPage from '../../auth/settingsFiles/SettingsPage';
+import Singles from '../../pages/Singles';
 
 const Home = lazy(() => import('../../pages/Home'));
 const ProfilePage = lazy(() => import('../../auth/ProfilePage'));
@@ -68,6 +73,7 @@ const AppContent = () => {
             </PublicLayout>
           }
         />
+
         <Route
           path={RoutePaths.USER_SEARCH}
           element={
@@ -112,9 +118,47 @@ const AppContent = () => {
          <Route
           path={RoutePaths.USER_PROFILE_FORM}
           element={
+             <LoggedUserOnly>
             <PublicLayout>
+              <FormProvider>
               <UserProfileForm/>
+              </FormProvider>
             </PublicLayout>
+            </LoggedUserOnly>
+          }
+        />
+         <Route
+          path={RoutePaths.SINGLES}
+          element={
+             <LoggedUserOnly>
+            <PublicLayout>
+              <FormProvider>
+              <Singles/>
+              </FormProvider>
+            </PublicLayout>
+            </LoggedUserOnly>
+          }
+        />
+         <Route
+          path={RoutePaths.SETTINGS_PAGE}
+          element={
+             <LoggedUserOnly>
+            <PublicLayout>
+              <SettingsPage/>
+            </PublicLayout>
+            </LoggedUserOnly>
+          }
+        />
+         <Route
+          path={RoutePaths.PROFILE_COMPLETION_MESSAGE}
+          element={
+             <LoggedUserOnly>
+            <PublicLayout>
+              <FormProvider>
+              <ProfileCompletionMessage/>
+              </FormProvider>
+            </PublicLayout>
+            </LoggedUserOnly>
           }
         />
  <Route
@@ -176,14 +220,23 @@ const AppContent = () => {
         />
 
         <Route path="/post/:postId" element={<PublicLayout><PostDetail /></PublicLayout>} />
-  
+<Route
+  path={RoutePaths.DISCOVER}
+  element={
+    <LoggedUserOnly>
+      <PublicLayout>
+        <Discover />
+      </PublicLayout>
+    </LoggedUserOnly>
+  }
+/>
 
         <Route
           path={RoutePaths.PROFILE_PAGE}
           element={
             <LoggedUserOnly>
               <PublicLayout>
-                <Outlet /> {/* Nested routes */}
+                <Outlet />
               </PublicLayout>
             </LoggedUserOnly>
           }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Meteor } from 'meteor/meteor';
 import { FaHeart, FaRegHeart } from 'react-icons/fa'; // Import icons
 
 const LikeButton = ({ commentId, replyId }) => {
@@ -35,13 +36,13 @@ const LikeButton = ({ commentId, replyId }) => {
 
   return (
     <div className="flex justify-between items-center">
-      <button 
-        onClick={handleLike} 
+      <button
+        onClick={handleLike}
         className={`flex items-center ${hasLiked ? 'text-blue-500' : 'text-gray-500'}`}
       >
         {hasLiked ? <FaHeart className="mr-1" /> : <FaRegHeart className="mr-1" />}
         <span className="text-gray-600 dark:text-gray-300">
-        {likeCount} Like | 
+        {likeCount} Like |
       </span>
       </button>
     </div>

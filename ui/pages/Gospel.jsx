@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTracker } from 'meteor/react-meteor-data';
 import { Link } from 'react-router-dom';
+import { Meteor } from 'meteor/meteor';
 import { PostsCollection } from '../../api/collections/posts.collection';
 import { Image, Transformation } from 'cloudinary-react';
 import ClipLoader from 'react-spinners/ClipLoader';
@@ -10,11 +11,11 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
 
-const PostImage = ({ cloud_name, postImage }) => {
+const PostImage = ({ cloudName, postImage }) => {
   return (
     <div className="aspect-[16/9] sm:aspect-[2/1] lg:aspect-square lg:w-64 lg:shrink-0">
       <Image
-        cloud_name={cloud_name}
+        cloudName={cloudName}
         publicId={postImage}
         className="absolute inset-0 h-full w-full rounded-2xl bg-gray-50 object-cover"
         alt="Post"
@@ -25,11 +26,11 @@ const PostImage = ({ cloud_name, postImage }) => {
   );
 };
 
-const AuthorProfileImage = ({ cloud_name, authorImage }) => {
+const AuthorProfileImage = ({ cloudName, authorImage }) => {
   if (authorImage) {
     return (
       <Image
-        cloud_name={cloud_name}
+        cloudName={cloudName}
         publicId={authorImage}
         width="auto"
         crop="scale"
@@ -47,7 +48,7 @@ const AuthorProfileImage = ({ cloud_name, authorImage }) => {
 };
 
 const Gospel = () => {
-  const cloud_name = 'cedar-christian-bilingual-school';
+  const cloudName = 'techpulse';
 
   const { posts, isLoading } = useTracker(() => {
     const handle = Meteor.subscribe('posts.byCategory', 'gospel');
@@ -89,7 +90,7 @@ const Gospel = () => {
                         {posts.map((post) => (
                             <article key={post._id} className="relative isolate flex flex-col gap-8 lg:flex-row">
                                 <div className="relative aspect-[16/9] sm:aspect-[2/1] lg:aspect-square lg:w-64 lg:shrink-0">
-                                    <PostImage cloud_name={cloud_name} postImage={post.image} className="absolute inset-0 h-full w-full rounded-2xl bg-gray-50 object-cover" />
+                                    <PostImage cloudName={cloudName} postImage={post.image} className="absolute inset-0 h-full w-full rounded-2xl bg-gray-50 object-cover" />
 
                                     <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-gray-900/10" />
                                 </div>
@@ -117,7 +118,7 @@ const Gospel = () => {
                                     </div>
                                     <div className="mt-2 flex border-t border-gray-900/5 p-3">
                                         <div className="relative flex items-center gap-x-4">
-                                               <AuthorProfileImage cloud_name={cloud_name} authorImage={post.author?.profile?.image}
+                                               <AuthorProfileImage cloudName={cloudName} authorImage={post.author?.profile?.image}
                                     className="h-10 w-10 rounded-full bg-gray-100" />
                                             <div className="text-sm leading-6">
                                                 <p className="font-semibold text-gray-900 dark:text-gray-200">

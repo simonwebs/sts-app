@@ -55,11 +55,11 @@ const PostDetail = () => {
   };
   const convertDescriptionToHTML = (description) => {
     const escapeHtml = (unsafe) => unsafe
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
     return escapeHtml(description);
   };
 
@@ -101,20 +101,20 @@ const PostDetail = () => {
   }
 
   const postImageId = post.image;
-  const cloud_name = 'cedar-christian-bilingual-school';
+  const cloudName = 'techpulse';
   let postImage;
   if (postImageId) {
     postImage = postImageId.startsWith('data:')
       ? <img src={postImageId} className={fullSize ? 'w-screen h-screen object-contain' : 'w-full shadow-lg rounded-2xl bg-gray-50 object-cover object-center lg:h-[34.5rem] '} />
       : (
-      <Image cloud_name={cloud_name} publicId={postImageId} quality="auto" fetchFormat="auto" className={fullSize ? 'w-screen h-screen object-contain' : 'w-full shadow-lg rounded-2xl bg-gray-50 object-cover object-center lg:h-[34.5rem]'} aspectRatio="9:16">
+      <Image cloud_name={cloudName} publicId={postImageId} quality="auto" fetchFormat="auto" className={fullSize ? 'w-screen h-screen object-contain' : 'w-full shadow-lg rounded-2xl bg-gray-50 object-cover object-center lg:h-[34.5rem]'} aspectRatio="9:16">
         <Transformation quality="auto" crop="fit" gravity="face" />
       </Image>
         );
   } else {
     postImage = <p>No post image</p>;
   }
- return (
+  return (
   <div className="flex items-center justify-center dark:bg-gray-700/100 min-h-screen py-6 px-4 md:px-8 lg:px-12 mt-16 post-container">
       <div className="container flex flex-col items-center w-full max-w-screen-lg">
         <div className="w-full flex justify-between mb-5">
@@ -135,7 +135,6 @@ const PostDetail = () => {
       <div className="w-full max-w-screen-lg mt-6 bg-white dark:bg-gray-700/100 p-6 rounded shadow-md">
         {/* Category and Date */}
 
-
         {/* Actions: Love, Share, Comment Count */}
       <div className="actions-container flex justify-between mt-2 items-center">
         {/* Love section */}
@@ -144,7 +143,7 @@ const PostDetail = () => {
 
         {/* Author Info */}
         <div className="flex items-center mt-4">
-        <AuthorProfileImage cloud_name={cloud_name} authorImage={post.author?.profile?.image} />
+        <AuthorProfileImage cloud_name={cloudName} authorImage={post.author?.profile?.image} />
         <span className="ml-4 text-lg dark:text-gray-400 flex-grow">{post.author?.username || 'Unknown Author'}</span>
         <span className="relative rounded-full bg-gray-300 text-gray-600 dark:bg-gray-600 px-3 py-1.5 font-medium text-gray-400 dark:text-gray-400 mr-5">
                   {post.category}

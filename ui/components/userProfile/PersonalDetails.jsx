@@ -5,64 +5,48 @@ const PersonalDetails = ({ formData, updateFormData, nextStep }) => {
     const { name, value } = e.target;
     updateFormData({ [name]: value });
   };
-
   return (
-    <div className="flex flex-col space-y-4">
-      <input
-        className="border-2 rounded-lg p-2"
-        type="text"
-        name="firstName"
-        value={formData.firstName}
+    <div>
+      <div className="mb-4">
+        <label htmlFor="firstName" className="block text-gray-700 dark:text-white text-sm font-bold mb-2">
+          First Name
+        </label>
+        <div className="flex items-center justify-center">
+          <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            className="peer block w-full border-0 bg-gray-50 dark:bg-gray-700 py-1.5 text-gray-900 dark:text-white focus:ring-0 sm:text-sm sm:leading-6 transition-all duration-300 focus:outline-none focus:border-cyan-500 focus:ring focus:ring-cyan-200 dark:focus:ring-cyan-700"
+            placeholder="Enter your first name"
+            value={formData.firstName}
         onChange={handleChange}
-        placeholder="First Name"
-      />
-      <input
-        className="border-2 rounded-lg p-2"
-        type="text"
-        name="lastName"
-        value={formData.lastName}
-        onChange={handleChange}
-        placeholder="Last Name"
-      />
-      <input
-        className="border-2 rounded-lg p-2"
-        type="date"
-        name="birthDate"
-        value={formData.birthDate}
-        onChange={handleChange}
-        placeholder="Birth Date"
-      />
-      <input
-        className="border-2 rounded-lg p-2"
-        type="text"
-        name="bodyHeight"
-        value={formData.bodyHeight}
-        onChange={handleChange}
-        placeholder="Height (cm)"
-      />
-       <div className="flex gap-2">
-        {['male', 'female', 'other'].map((gender) => (
-          <label key={gender} className="flex items-center gap-2">
-            <input
-              type="radio"
-              name="biologicalGender"
-              value={gender}
-              checked={formData.biologicalGender === gender}
-              onChange={handleChange}
-              className="form-radio"
-            />
-            {gender.charAt(0).toUpperCase() + gender.slice(1)}
-          </label>
-        ))}
+          />
+          <div
+            className="absolute inset-x-0 bottom-0 border-t border-gray-300 peer-focus:border-t-2 peer-focus:border-indigo-600"
+            aria-hidden="true"
+          />
+        </div>
       </div>
-
-      <textarea
-        className="w-full p-2 border rounded"
-        name="personalBio"
-        placeholder="A short bio about yourself"
-        value={formData.personalBio}
+      <div className="mb-6">
+        <label htmlFor="lastName" className="block text-gray-700 dark:text-white text-sm font-bold mb-2">
+          Last Name
+        </label>
+        <div className="relative mt-2">
+          <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            className="peer block w-full border-0 bg-gray-50 dark:bg-gray-700 py-1.5 text-gray-900 dark:text-white focus:ring-0 sm:text-sm sm:leading-6 transition-all duration-300 focus:outline-none focus:border-cyan-500 focus:ring focus:ring-cyan-200 dark:focus:ring-cyan-700"
+            placeholder="Enter your last name"
+           value={formData.lastName}
         onChange={handleChange}
-      />
+          />
+          <div
+            className="absolute inset-x-0 bottom-0 border-t border-gray-300 peer-focus:border-t-2 peer-focus:border-indigo-600"
+            aria-hidden="true"
+          />
+        </div>
+      </div>
     </div>
   );
 };

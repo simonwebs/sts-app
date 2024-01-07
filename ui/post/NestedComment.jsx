@@ -10,7 +10,7 @@ import { FaComment } from 'react-icons/fa';
 import { VscEllipsis } from 'react-icons/vsc';
 
 const NestedComment = ({ comment, postId, level = 0, replyIndex }) => {
-  const cloud_name = 'cedar-christian-bilingual-school';
+  const cloudName = 'techpulse';
   const [replies, setReplies] = useState([]);
   const [showRepliesAndForm, setShowRepliesAndForm] = useState(false);
 
@@ -95,7 +95,7 @@ const NestedComment = ({ comment, postId, level = 0, replyIndex }) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <Image
-            cloud_name={cloud_name}
+            cloudName={cloudName}
             publicId={comment?.authorImage}
             width="80"
             height="80"

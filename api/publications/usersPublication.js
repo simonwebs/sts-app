@@ -50,35 +50,49 @@ Meteor.onConnection((connection) => {
     });
   }
 });
+Meteor.publish('singleUser', function (userId) {
+  return Meteor.users.find({ _id: userId }, { fields: { profile: 1 } });
+});
+
+Meteor.publish('userData', function () {
+  if (!this.userId) {
+    // If the user is not logged in, do not publish data
+    return this.ready();
+  }
+
+  const usersCursor = Meteor.users.find({}, { fields: { 'profile.username': 1, 'profile.images': 1, 'profile.birthDate': 1, 'profile.personalBio': 1, status: 1 } });
+  const userProfilesCursor = UserProfiles.find({}, { fields: { personalBio: 1, birthDate: 1 } });
+
+  console.log('Publishing users data:', usersCursor.fetch());
+  console.log('Publishing user profiles data:', userProfilesCursor.fetch());
+
+  return [usersCursor, userProfilesCursor];
+});
+
 Meteor.publish('allUsers', function (page = 0, pageSize = 5) {
   check(page, Number);
   check(pageSize, Number);
 
-  const currentUser = Meteor.users.findOne(this.userId);
-  let fields = {
-      username: 1,
-      'profile.image': 1,
-      newImage: 1, // Added this line
-      friendRequests: 1,
-      friends: 1,
-      status: 1,
-      createdAt: 1,
-      'profile.gender': 1,
-      'profile.profession': 1,
-      'profile.location': 1,
-      'profile.maritalStatus': 1,
-    };
-  if (currentUser.role === 'admin' || currentUser.role === 'superadmin') {
-    fields = { ...fields, 'adminField1': 1, 'adminField2': 1 };
-  }
+  const fields = {
+    username: 1,
+    'profile.images': 1,
+    status: 1,
+    createdAt: 1,
+  };
 
-  return Meteor.users.find({}, {
+  const usersDataCursor = Meteor.users.find({}, {
     skip: page * pageSize,
     limit: pageSize,
     fields,
   });
-});
 
+  const userIds = usersDataCursor.fetch().map(user => user._id);
+  const userProfileDataCursor = UserProfiles.find({ authorId: { $in: userIds } });
+  console.log('userProfileDataCursor count:', userProfileDataCursor.count());
+
+  // Return an array of Cursors
+  return [usersDataCursor, userProfileDataCursor];
+});
 
 // Server-side publication
 Meteor.publish('users.getById', function (userId) {
@@ -87,7 +101,7 @@ Meteor.publish('users.getById', function (userId) {
     fields: {
       username: 1,
       authorId: 1,
-      'profile.image': 1,
+      'profile.images': 1,
       'profile.bannerImage': 1,
       // ... other fields you need to publish
     },
@@ -100,7 +114,7 @@ Meteor.publish('userStatus', function () {
       username: 1,
       createdAt: 1,
       authorId: 1,
-      'profile.image': 1, // Updated this line
+      'profile.images': 1, // Updated this line
       status: 1,
     },
   });
@@ -112,25 +126,25 @@ Meteor.publish('userProfileData', function (userId) {
   if (userId && typeof userId === 'string') {
     if (this.userId === userId) {
       // Logged-in user requesting their own profile
-      return UserProfiles.find({ userId: userId });
+      return UserProfiles.find({ userId });
     } else {
       // Any logged-in user requesting someone else's profile
-      return UserProfiles.find({ userId: userId }, {
+      return UserProfiles.find({ userId }, {
         fields: {
           // List the fields you want to be publicly available to other users
-          'firstName': 1,
-          'lastName': 1,
-          'birthDate': 1,
-          'bodyHeight': 1,
-          'biologicalGender': 1,
-          'personalBio': 1,
-          'lookingForGender': 1,
-          'agePreferenceMin': 1,
-          'agePreferenceMax': 1,
-          'country': 1,
-          'city': 1,
-          'profilePhotos': 1
-        }
+          firstName: 1,
+          lastName: 1,
+          birthDate: 1,
+          bodyHeight: 1,
+          biologicalGender: 1,
+          personalBio: 1,
+          lookingForGender: 1,
+          agePreferenceMin: 1,
+          agePreferenceMax: 1,
+          country: 1,
+          city: 1,
+          profilePhotos: 1,
+        },
       });
     }
   } else {
@@ -150,7 +164,7 @@ Meteor.publish('profileData', function (userId) {
   return Meteor.users.find({ _id: userId }, {
     fields: {
       username: 1,
-      'profile.image': 1,
+      'profile.images': 1,
       'profile.bannerImage': 1,
       // ...any other fields you need
     },
@@ -167,8 +181,7 @@ Meteor.publish('friends', function () {
           username: 1,
           status: 1,
           createdAt: 1,
-          'profile.image': 1, // Updated this line
-          createdAt: 1,
+          'profile.images': 1, // Updated this line
           'profile.profession': 1,
           'profile.bio': 1,
         },
@@ -182,17 +195,17 @@ Meteor.publish('userList', function () {
   if (this.userId) {
     const currentUser = Meteor.users.findOne(this.userId);
     let fields = {
-        username: 1,
-        'profile.image': 1, // Updated this line
-        emails: 1,
-        status: 1,
-        services: 1,
-        createdAt: 1,
-        'status.online': 1,
-       };
+      username: 1,
+      'profile.images': 1,
+      emails: 1,
+      status: 1,
+      services: 1,
+      createdAt: 1,
+      'status.online': 1,
+    };
 
     if (currentUser.role === 'admin' || currentUser.role === 'superadmin') {
-      fields = { ...fields, 'adminField1': 1, 'adminField2': 1 };
+      fields = { ...fields, adminField1: 1, adminField2: 1 };
     }
 
     return UsersCollection.find({}, {
@@ -237,7 +250,7 @@ Meteor.publish('search', function (searchTerm, limit = 20) {
       username: 1,
       status: 1,
       createdAt: 1,
-      'profile.image': 1,
+      'profile.images': 1,
     },
     limit,
   });
@@ -284,56 +297,137 @@ Meteor.publish('search', function (searchTerm, limit = 20) {
   this.ready();
 });
 
-Meteor.publish('singleUser', function (userId) {
-  if (!userId) {
-    throw new Meteor.Error('invalid-user', 'User not defined');
-  }
+// Meteor.publish('allUsersDetails', function () {
+//   const usersCursor = Meteor.users.find({}, {
+//     fields: {
+//       username: 1,
+//        authorId: 1,
+//       'profile.firstName': 1,
+//       'profile.lastName': 1,
+//       'profile.images': 1,
+//       'status.online': 1,
+//       'status.lastLogin.date': 1,
+//       'profile.personalBio': 1,
+//       'profile.birthDate': 1,
+//       profileCreatedAt: 1,
+//       disability: 1,
+//       disabilityDescription: 1,
+//       behavior: 1,
+//       relationshipPreferences: 1,
+//       bodyHeight: 1,
+//       biologicalGender: 1,
+//       lookingForGender: 1,
+//       lookingForBodyHeight: 1,
+//       lookingForBodyType: 1,
+//       agePreferenceMin: 1,
+//       agePreferenceMax: 1,
+//       country: 1,
+//       city: 1,
+//       status: 1,
+//       likedByUsers: 1,
+//       matches: 1,
+//       compatibility: 1,
+//     },
+//   });
 
-  check(userId, String);
+//   console.log('Added to usersCursor:', usersCursor.fetch());
 
-  return Meteor.users.find(userId, {
-    fields: {
-      username: 1,
-      status: 1,
-      'profile.image': 1, // Updated this line
-      friendRequests: 1,
-      friends: 1,
-      createdAt: 1,
-      'profile.gender': 1,
-      'profile.profession': 1,
-      'profile.location': 1,
-      'profile.maritalStatus': 1,
-    },
-  });
-});
-
-// Server: Publish user data including profile images
-Meteor.publish('allUserProfiles', function () {
-  return Meteor.users.find({}, {
-    fields: {
-      'profile.image': 1,
-      'username': 1,
-      // ... other fields you want to publish
-    }
-  });
-});
-
-Meteor.publish('userDetails', function (userId) {
-  check(userId, String);
-
+//   return usersCursor;
+// });
+Meteor.publish('allUsersDetails', function () {
   if (!this.userId) {
-    // if the user is not logged in, do not publish anything
+    // If the user is not logged in, do not publish anything
     return this.ready();
   }
 
-  // Assuming you want to publish data from two different collections
-  const cursor1 = Meteor.users.find({ _id: userId });
-  const cursor2 = UserProfiles.find({ authorId: userId });
+  const currentUser = Meteor.users.findOne({ _id: this.userId });
 
-  // Return an array of cursors
-  return [cursor1, cursor2];
+  if (!currentUser) {
+    // If the current user is not found, return ready
+    return this.ready();
+  }
+ console.log('Publishing current user details:', currentUser);
+
+  // Add the current user's details to the publication
+  this.added('users', currentUser._id, {
+    username: currentUser.username,
+    authorId: currentUser.authorId,
+    profile: currentUser.profile,
+    status: currentUser.status,
+    hasDisability: currentUser.disability ? currentUser.disability.hasDisability : false,
+    disabilityDescription: currentUser.disability ? currentUser.disability.disabilityDescription : '',
+    interests: currentUser.interests || [],
+    relationship: currentUser.relationshipPreferences || 'marriage', // Assuming a default value
+    // Add other necessary fields from the profile
+  });
+
+  // Fetch user profiles excluding the current user
+  const usersCursor = Meteor.users.find(
+    { _id: { $ne: this.userId } },
+    {
+      fields: {
+        username: 1,
+        authorId: 1,
+        profile: 1,
+        status: 1,
+        disability: 1,
+        interests: 1,
+        relationshipPreferences: 1,
+        // Add other necessary fields from the profile
+      },
+    },
+  );
+
+  // Loop through user profiles and add them to the publication
+  usersCursor.forEach((user) => {
+    this.added('users', user._id, {
+      username: user.username,
+      authorId: user.authorId,
+      profile: user.profile,
+      status: user.status,
+      hasDisability: user.disability ? user.disability.hasDisability : false,
+      disabilityDescription: user.disability ? user.disability.disabilityDescription : '',
+     interests: user.interests || [],
+      relationship: user.relationshipPreferences || 'marriage', // Assuming a default value
+      // Add other necessary fields from the profile
+    });
+  });
+
+  // Fetch user gallery images for the current user
+  const currentUserImages = UsersCollection.findOne({ _id: this.userId });
+
+  if (currentUserImages && currentUserImages.profile && currentUserImages.profile.images) {
+    currentUserImages.profile.images.forEach((image, index) => {
+      this.added('UsersCollectionImages', `${this.userId}_${index}`, image);
+    });
+  }
+
+  return this.ready();
 });
 
+// Define the publication for user gallery images
+Meteor.publish('userGalleryImages', function () {
+  if (!this.userId) {
+    // If the user is not logged in, do not publish anything
+    return this.ready();
+  }
+
+  const userId = this.userId;
+
+  console.log('Publishing user gallery images for userId:', userId);
+
+  // Find the user by ID
+  const user = UsersCollection.findOne({ _id: userId });
+
+  if (user && user.profile && user.profile.images) {
+    // Add user's profile images to the publication
+    user.profile.images.forEach((image, index) => {
+      this.added('UsersCollectionImages', `${userId}_${index}`, image);
+    });
+  }
+
+  this.ready();
+});
 
 Meteor.publish('userProfileDetails', function (userId) {
   // We check if the userId is a string, but we also handle the case where it might be undefined
@@ -351,8 +445,6 @@ Meteor.publish('userProfileDetails', function (userId) {
 
   return UserProfiles.find({ authorId: userId });
 });
-// Server: publications.js
-// Server: publications.js
 
 Meteor.publish('userContacts', function () {
   // console.log('userContacts publication called');
@@ -360,27 +452,19 @@ Meteor.publish('userContacts', function () {
   if (!this.userId) {
     return this.ready();
   }
-
-  // Find all user profiles except the current user's
-  // Assuming each userProfile document has a reference to the userId
   return Meteor.users.find(
     { _id: { $ne: this.userId } },
     {
       fields: {
-        username: 1, // Send the username
-        'profile.image': 1,
-        status: 1, // Send the profile image
+        username: 1,
+        'profile.images': 1,
+        status: 1,
       },
-    }
+    },
   );
 });
 
-// server/main.js
-
-// Define the 'userProfilesSearch' publication
 Meteor.publish('userProfilesSearch', function (searchQuery) {
-  // Your publication logic here to fetch user profiles based on the searchQuery
-  // Example: Fetch user profiles that match the search criteria
   const searchResults = UserProfiles.find({
     $or: [
       { firstName: { $regex: searchQuery, $options: 'i' } },
@@ -394,3 +478,20 @@ Meteor.publish('userProfilesSearch', function (searchQuery) {
   return searchResults;
 });
 
+Meteor.publish('currentUserData', function () {
+  if (!this.userId) {
+    // If the user is not logged in, stop the publication
+    return this.ready();
+  }
+
+  // Return the relevant data for the current user
+  return UsersCollection.find(
+    { _id: this.userId },
+    {
+      fields: {
+        'profile.images': 1,
+        username: 1,
+      },
+    },
+  );
+});

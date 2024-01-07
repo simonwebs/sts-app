@@ -43,7 +43,7 @@ const MessageSchema = new SimpleSchema({
   },
   createdAt: {
     type: Date,
-    autoValue() {
+    autoValue () {
       if (this.isInsert && !this.isSet) {
         return new Date();
       }

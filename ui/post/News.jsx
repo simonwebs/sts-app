@@ -8,10 +8,10 @@ import { Image, Transformation } from 'cloudinary-react';
 import AuthorProfileImage from '../pages/AuthorProfileImage';
 import TimeSince from '../components/TimeSince';
 
-const PostImage = ({ cloud_name, postImage, post }) => (
+const PostImage = ({ cloudName, postImage, post }) => (
   <div className="aspect-[16/9] sm:aspect-[2/1] lg:aspect-square lg:w-64 lg:shrink-0">
     <Image
-cloud_name={cloud_name}
+cloudName={cloudName}
      publicId={postImage}
      className="absolute inset-0 h-full w-full rounded-2xl bg-gray-50 object-cover"
      width={400}
@@ -44,7 +44,7 @@ const usePosts = () => {
 };
 
 const News = () => {
-  const cloud_name = 'cedar-christian-bilingual-school';
+  const cloudName = 'techpulse';
   const { posts, isLoading } = usePosts();
 
   if (isLoading) {
@@ -68,7 +68,7 @@ const News = () => {
         {posts.map((post) => (
           <article key={post._id} className="relative isolate flex flex-col gap-8 lg:flex-row">
             <div className="relative" style={{ minHeight: '250px' }}>
-              <PostImage cloud_name={cloud_name} postImage={post.image} />
+              <PostImage cloudName={cloudName} postImage={post.image} />
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-x-4 text-xs">
@@ -95,7 +95,7 @@ const News = () => {
               </div>
               <div className="mt-2 flex border-t border-gray-900/5 p-3">
                 <div className="relative flex items-center gap-x-4">
-                  <AuthorProfileImage cloud_name={cloud_name} authorImage={post.author?.profile?.image} />
+                  <AuthorProfileImage cloudName={cloudName} authorImage={post.author?.profile?.image} />
                   <div className="text-sm leading-6">
                     <p className="font-semibold text-gray-900 dark:text-gray-200">
                     <Link to={`/profile/${post.author._id}`} aria-label={`Go to ${post.author?.username}'s profile`}>

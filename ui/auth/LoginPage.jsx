@@ -89,7 +89,8 @@ const LoginPage = () => {
         </div>
         <div className="space-y-4">
       <button
-        className="flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-300"
+        className="flex items-center justify-center w-full px-4 py-2 bg-gradient-to-r from-teal-500
+  via-emerald-500 to-lime-600 hover:shadow-lg hover:opacity-75 hover:scale-105 hover:bg-gradient-to-r hover:from-teal-400 hover:via-emerald-400 hover:to-lime-500 text-white transition duration-300"
         onClick={loginWithGoogle}
       >
         {/* Google SVG icon */}

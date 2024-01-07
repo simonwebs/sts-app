@@ -1,141 +1,134 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useTracker } from 'meteor/react-meteor-data';
 import { UserProfiles } from '../../api/collections/UserProfiles';
-import { Image } from 'cloudinary-react';
-import { FaEnvelope, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { Meteor } from 'meteor/meteor';
+import { FaEnvelope } from 'react-icons/fa';
 
 const formatDate = (dateString) => {
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
 
-const UserDetails = () => {
-  const cloud_name = 'swed-dev'; // Replace with your actual cloud name
+const calculateAge = (birthDate) => {
+  const today = new Date();
+  const birthDateObj = new Date(birthDate);
+  let age = today.getFullYear() - birthDateObj.getFullYear();
+  const monthDiff = today.getMonth() - birthDateObj.getMonth();
 
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
+    age--;
+  }
+
+  return age;
+};
+
+const UserDetails = () => {
   const { userId } = useParams();
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const { userProfile, isLoadingUserProfile } = useTracker(() => {
     const noDataAvailable = { userProfile: null, isLoadingUserProfile: true };
     if (!userId) return noDataAvailable;
-  
-    const subscription = Meteor.subscribe('userProfileDetails', userId);
+
+    const subscription = Meteor.subscribe('allUsersDetails', userId);
     if (!subscription.ready()) {
       return { ...noDataAvailable, isLoadingUserProfile: true };
     }
-  
+
     const userProfile = UserProfiles.findOne({ authorId: userId });
     return { userProfile, isLoadingUserProfile: false };
   }, [userId]);
-  
+
   if (isLoadingUserProfile) {
     return <div>Loading...</div>;
   }
 
-  // const setProfileImage = (photoUrl) => {
-  //   Meteor.call('userProfiles.setProfileImage', userId, photoUrl, (error, result) => {
-  //     if (error) {
-  //       console.error('Error updating profile image:', error);
-  //     } else {
-  //       // Handle successful update, e.g., show a notification
-  //       console.log('Profile image updated successfully');
-  //     }
-  //   });
-  // };
-  const nextPhoto = () => {
-    setCurrentPhotoIndex((prevIndex) =>
-      prevIndex + 1 < userProfile.profilePhotos.length ? prevIndex + 1 : 0
-    );
-  };
-
-  const prevPhoto = () => {
-    setCurrentPhotoIndex((prevIndex) =>
-      prevIndex - 1 >= 0 ? prevIndex - 1 : userProfile.profilePhotos.length - 1
-    );
-  };
   if (!userProfile) {
     console.error(`User profile not found for userId: ${userId}`);
     return <div>User profile not found.</div>;
   }
 
-  return (
-    <div className="bg-white dark:bg-gray-700 shadow-lg rounded-lg overflow-hidden my-4">
-      {/* Profile information rendering here */}
-      <div className="p-4 md:p-6 lg:p-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="col-span-1 md:col-span-2">
-          <div className="pt-2 pb-2">
-  <div className="bg-gray-50 dark:bg-gray-700 shadow-lg px-2 py-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">First Name</span>
-    <span className="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0">{userProfile.firstName}</span>
-    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Last Name</span>
-    <span className="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0">{userProfile.lastName}</span>
-    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Date of Birth</span>
-    <span className="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0">
-  {formatDate(userProfile.birthDate)}
-</span>
+  const hasDisability = userProfile?.disability?.hasDisability;
+  const disabilityDescription = userProfile?.disability?.disabilityDescription;
+  const age = calculateAge(userProfile.birthDate);
 
-  <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Biological Gender</span>
-    <span className="block mt-1 text-sm text-gray-900 dark:text-white">{userProfile?.biologicalGender}</span>
-    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Body Height</span>
-    <span className="mt-1 text-sm text-gray-900 dark:text-white sm:mt-0">{userProfile.bodyHeight}</span>
-    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Looking For Gender</span>
-    <span className="block mt-1 text-sm text-gray-900 dark:text-white">{userProfile.lookingForGender}</span>
-    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Minimum Age Preference</span>
-    <span className="block mt-1 text-sm text-gray-900 dark:text-white">{userProfile.agePreferenceMin}</span>
-    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Maximum Age Preference</span>
-    <span className="block mt-1 text-sm text-gray-900 dark:text-white">{userProfile.agePreferenceMax}</span>
-  </div>
-  <div className="flex flex-col sm:flex-row justify-between items-center pt-2">
-    {/* Assuming you want to display email and phone, if available in userProfile */}
-    {userProfile.email && (
+  console.log('User Profile:', userProfile); // Log the entire user profile to check its structure
+
+  return (
+    <div className="bg-white dark:bg-gray-700 shadow-lg rounded-lg overflow-hidden my-4 mx-2 md:mx-8 lg:mx-20 xl:mx-32">
+      <div className="p-4 md:p-6 lg:p-8 border-t">
+        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Personal Bio</span>
+        <p className="mt-2 text-sm text-gray-900 dark:text-white">{userProfile.personalBio}</p>
+      </div>
+
+      <div className="p-4 md:p-6 lg:p-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex flex-col space-y-4">
+          <div className="bg-gray-50 dark:bg-gray-700 shadow-md hover:shadow-lg px-4 py-3 rounded-md">
+            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Age</span>
+            <span className="mt-1 text-sm text-gray-900 dark:text-white ml-4">{age}</span>
+          </div>
+<div className="bg-gray-50 dark:bg-gray-700 shadow-md hover:shadow-lg px-4 py-3 rounded-md">
+            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Gender</span>
+            <span className="mt-1 text-sm text-gray-900 dark:text-white ml-4">{userProfile?.biologicalGender}</span>
+          </div>
+
+          {/* ... other items ... */}
+        </div>
+
+        <div className="flex flex-col space-y-4">
+         {hasDisability !== undefined && (
+          <div className="bg-gray-50 dark:bg-gray-700 shadow-md hover:shadow-lg px-4 py-3 rounded-md">
+            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Has Disability</span>
+            <span className="mt-1 text-sm text-gray-900 dark:text-white">{hasDisability ? 'Yes' : 'No'}</span>
+
+            {hasDisability && (
+              <>
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Disability Description</span>
+                <span className="mt-1 text-sm text-gray-900 dark:text-white">
+                  {disabilityDescription || 'N/A'}
+                </span>
+              </>
+            )}
+          </div>
+         )}
+          {/* ... other items ... */}
+        </div>
+      </div>
+
+      {/* Display Relationship Preferences */}
+      <div className="bg-gray-50 dark:bg-gray-700 shadow-md hover:shadow-lg px-4 py-3 rounded-md">
+        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Relationship Preferences</span>
+        <span className="mt-1 text-sm text-gray-900 dark:text-white ml-4">
+          {userProfile.relationshipPreferences?.relationshipPreferences || 'N/A'}
+        </span>
+      </div>
+
+     <div className="bg-gray-50 dark:bg-gray-700 shadow-md hover:shadow-lg px-4 py-3 grid grid-cols-1 gap-2 sm:grid-cols-2 rounded-md">
+      <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Interest</span>
+      <span className="mt-1 text-sm text-gray-900 dark:text-white ml-4 sm:mt-0">
+        {userProfile.interests?.length
+          ? userProfile.interests.map((interest, index) => {
+            console.log(`Interest[${index}]:`, interest); // Log each interest to check its structure
+            return interest?.interestName || 'N/A';
+          }).join(', ')
+          : 'N/A'}
+      </span>
+    </div>
+
+      <div className="bg-gray-50 dark:bg-gray-700 shadow-md hover:shadow-lg px-4 py-3 rounded-md">
+        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Behavior</span>
+        <span className="mt-1 text-sm text-gray-900 dark:text-white ml-4 sm:mt-0">
+          {userProfile.behavior?.behavior || 'N/A'}
+        </span>
+      </div>
+
+      {/* ... other items ... */}
+
+      <div className="flex flex-col sm:flex-row justify-between items-center pt-4">
+        {userProfile.email && (
           <a href={`mailto:${userProfile.email}`} className="text-blue-600 hover:text-blue-800">
             <FaEnvelope className="inline-block" /> {userProfile.email}
           </a>
         )}
-  </div>
-</div>
-
-          </div>
-          <div className="col-span-1">
-        <div className="p-4 md:p-6 lg:p-8 border-t">
-          <h3 className="text-lg font-semibold mb-2">Photos</h3>
-          {userProfile.profilePhotos.length > 0 && (
-            <div className="relative">
-              <Image
-                cloud_name={cloud_name}
-                publicId={userProfile.profilePhotos[currentPhotoIndex].photoUrl}
-                width="auto"
-                crop="scale"
-                quality="auto"
-                fetchFormat="auto"
-                secure
-                dpr="auto"
-                responsive
-                className="object-cover object-center w-full h-48 rounded-md"
-                alt="Profile"
-              />
-              <button
-                className="absolute top-1/2 left-2 transform -translate-y-1/2 p-2 rounded-full bg-blue-500/50 text-white"
-                onClick={prevPhoto}
-                title="Previous Photo"
-              >
-                <FaArrowLeft />
-              </button>
-              <button
-                className="absolute top-1/2 right-2 transform -translate-y-1/2 p-2 rounded-full bg-blue-500/50 text-white"
-                onClick={nextPhoto}
-                title="Next Photo"
-              >
-                <FaArrowRight />
-              </button>
-            </div>
-          )}
-        </div>
-          </div>
-        </div>
-        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Personal Bio</span>
-      <span className="block mt-1 text-sm text-gray-900 dark:text-white">{userProfile.personalBio}</span>
       </div>
     </div>
   );

@@ -80,14 +80,14 @@ const NotificationBell = ({ onUserSelect, currentUserId, profileUserId }) => {
               <div className="fixed inset-y-0 right-0 max-w-full flex z-20">
                 <div className="w-screen max-w-md bg-white dark:bg-gray-700 shadow-lg mt-16">
                   {isCurrentUserProfile && <UserContact onUserSelect={onUserSelect} />}
-                  <div className="absolute top-0 right-0 pt-7 pr-7 bg-white py-2 px-1 rounded-full shadow-lg">
+                 <div className="absolute top-4 right-4">
                     <button
                       onClick={handleCloseDialog}
                       className="text-gray-400 hover:text-gray-500 focus:outline-none"
                     >
                       <span className="sr-only">Close</span>
                       <svg
-                        className="h-8 w-8"
+                        className="h-8 w-8 text-current" // Set the icon color based on the current text color
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -117,6 +117,5 @@ NotificationBell.propTypes = {
   onUserSelect: PropTypes.func,
   currentUserId: PropTypes.string, // Making it optional by removing `isRequired`
 };
-
 
 export default NotificationBell;

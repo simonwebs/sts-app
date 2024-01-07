@@ -1,26 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
-import { UserProfiles } from '../../../api/collections/UserProfiles';
 import ProfileCard from './ProfileCard';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 
-const Explore = ({ user, className }) => {
+const Explore = ({ className }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [profiles, setProfiles] = useState([]);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [swipeDirection, setSwipeDirection] = useState('');
 
   // Fetch profiles
   useTracker(() => {
-    const handler = Meteor.subscribe('userProfiles.all');
+    const handler = Meteor.subscribe('allUsersDetails');
     if (!handler.ready()) {
       setProfiles([]);
     } else {
-      const fetchedProfiles = UserProfiles.find({}).fetch();
+      const fetchedProfiles = Meteor.users.find().fetch();
       setProfiles(fetchedProfiles);
     }
   }, []);
-
 
   const handleSwipe = (direction) => {
     // Set the swipe direction to trigger the animation
@@ -36,18 +35,26 @@ const Explore = ({ user, className }) => {
     }, 500); // Match this timeout with your CSS animation duration
   };
 
-  // Effects and loading handling omitted for brevity
-  if (!profiles.length) {
-    return <div className="explore-no-more">No more profiles to show.</div>;
-  }
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.key === 'ArrowLeft') {
+        handleSwipe('left');
+      } else if (event.key === 'ArrowRight') {
+        handleSwipe('right');
+      }
+    };
 
-  const handleViewDetails = (authorId) => {
-    console.log('Navigating to author profile with ID:', authorId);
-    navigate(`/profile/${authorId}`);
+    document.addEventListener('keydown', handleKeyPress);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleSwipe]);
+
+  const handleViewDetails = (userId) => {
+    console.log('Navigating to user profile with ID:', userId);
+    navigate(`/profile/${userId}`);
   };
-
-  // Get the active profile
-  const activeProfile = profiles[activeIndex];
 
   return (
     <div className={`${className}`}>
@@ -56,14 +63,13 @@ const Explore = ({ user, className }) => {
           key={profile._id}
           className={`profile-card-container ${index === activeIndex ? 'active' : 'hidden'} ${swipeDirection === 'left' ? 'swipe-left' : swipeDirection === 'right' ? 'swipe-right' : ''}`}
         >
-         <ProfileCard
-          key={profile._id}
-          user={profile}
-          onSwipeLeft={() => handleSwipe('left')}
-          onSwipeRight={() => handleSwipe('right')}
-          onViewDetails={handleViewDetails} 
-          likedByUsers={user?.likedByUsers} 
-        />
+          <ProfileCard
+            key={profile._id}
+            user={profile}
+            onSwipeLeft={() => handleSwipe('left')}
+            onSwipeRight={() => handleSwipe('right')}
+            onViewDetails={handleViewDetails}
+          />
         </div>
       ))}
     </div>

@@ -17,7 +17,7 @@ import Subscribers from '../emails/Subscribers';
 import ContactList from '../emails/ContactList';
 
 const AdminHome = () => {
-    const user = useTracker(() => Meteor.user());
+  const user = useTracker(() => Meteor.user());
   const [currentView, setCurrentView] = useState('default');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showNewPostModal, setShowNewPostModal] = useState(false);
@@ -25,7 +25,7 @@ const AdminHome = () => {
   const [showExpenseIncomeModal, setShowExpenseIncomeModal] = useState(false);
   const [showTransactionChartModal, setShowTransactionChartModal] = useState(false);
   const [showSettingModal, setShowSettingModal] = useState(false);
-   const [showSubscribersModal, setShowSubscribersModal] = useState(false);
+  const [showSubscribersModal, setShowSubscribersModal] = useState(false);
   const [showContactListModal, setShowContactListModal] = useState(false);
   const [showNewVideoPostModal, setShowNewVideoPostModal] = useState(false);
   const [showAdminProfilePageModal, setShowAdminProfilePageModal] = useState(false);
@@ -36,7 +36,7 @@ const AdminHome = () => {
     if (view === 'NewPostForm') {
       setShowNewPostModal(true);
     }
-  
+
     if (view === 'NewVideoPostForm') {
       setShowNewVideoPostModal(true);
     }
@@ -58,8 +58,8 @@ const AdminHome = () => {
     if (view === 'AdminProfilePage') {
       setShowAdminProfilePageModal(true);
     }
-   
-     if (view === 'Subscribers') {
+
+    if (view === 'Subscribers') {
       setShowSubscribersModal(true);
     }
     if (view === 'ContactList') {
@@ -75,7 +75,6 @@ const AdminHome = () => {
     return <Loading/>;
   }
 
- 
   return (
     <div className={`flex w-full flex-col h-screen dark:bg-gray-700 ${isSidebarOpen ? '' : 'pl-0'}`}>
       <AdminHeader toggleSidebar={toggleSidebar} className="w-full" />

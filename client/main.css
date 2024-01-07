@@ -36,6 +36,40 @@ body {
   -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
 }
+.map-container {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin: 20px;
+  opacity: 0; /* Initially hidden */
+  transition: opacity 1s ease-in-out;
+}
+
+.map-container.fade-in {
+  opacity: 1;
+}
+
+.error-message {
+  color: #ff0000;
+  font-weight: bold;
+  margin-top: 10px;
+}
+/* Add these styles in your CSS */
+.profile-image {
+  width: 100%;
+  height: 100%;
+}
+
+.skew-img {
+  transform: skewX(-10deg); /* Adjust the skew angle as needed */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
+
 /* General Utility Styles */
 *, *::before, *::after {
   box-sizing: border-box;

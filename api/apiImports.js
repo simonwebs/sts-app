@@ -18,6 +18,9 @@ import './collections/AdminsCollection';
 import './collections/calls.collection';
 import './collections/Conversations';
 import './collections/messages.collection';
+import './collections/Photos';
+import './collections/Follower';
+import './collections/ActivityLogs';
 
 import './methods/newsletter';
 import './methods/contacts.methods';
@@ -30,13 +33,14 @@ import './methods/analyticsMethods';
 import './methods/TransactionMethods';
 import './methods/VideosMethods';
 import './methods/SettingsMethods';
-import './methods/ adminsMethods'
+import './methods/ adminsMethods';
 import './methods/calls.methods';
 import './methods/FriendRequestsMethods';
 import './methods/messages.methods';
 import './methods/PrivateMessages.methods';
 import './methods/chatRequestsMethods';
-import './methods/notifications.methods'
+import './methods/notifications.methods';
+import './methods/PhotosMethods';
 
 import './publications/HistoriesPublication';
 import './publications/posts.publication';
@@ -53,8 +57,8 @@ import './publications/SettingsPublication';
 import './publications/rolesPublication';
 import './publications/SearchPublication';
 import './publications/calls.publication';
-import './publications/FriendRequestsPublication'
+import './publications/FriendRequestsPublication';
 import './publications/messages.publication';
 import './publications/chatRequestsPublication';
+import './publications/PhotosPublication';
 import './publications/PrivateMessages.publication';
-

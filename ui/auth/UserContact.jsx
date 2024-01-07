@@ -51,7 +51,7 @@ const UserContact = ({ onUserSelect }) => {
       return { users: [], isLoading: true };
     }
 
-    const handler = Meteor.subscribe('userContacts');
+    const handler = Meteor.subscribe('allUsersDetails');
     if (!handler.ready()) {
       return { users: [], isLoading: true };
     }

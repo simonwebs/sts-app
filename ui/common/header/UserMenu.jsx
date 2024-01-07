@@ -1,21 +1,20 @@
 import React, { Fragment } from 'react';
 import { Meteor } from 'meteor/meteor';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // Import Link
 import { Menu, Transition } from '@headlessui/react';
 import { Image } from 'cloudinary-react';
 import { useLoggedUser } from 'meteor/quave:logged-user-react';
 import Swal from 'sweetalert2';
-import { FaSignInAlt } from 'react-icons/fa';
-
+import { FaSignInAlt, FaCog } from 'react-icons/fa'; // Import FaCog icon for settings
 
 const UserMenu = ({ user }) => {
-  const cloudName = 'swed-dev'; // Your actual cloud name
-  const defaultImageId = 'https://via.placeholder.com/150'; // Your default image ID
+  const cloudName = 'techpulse';
+  const defaultImageId = 'https://via.placeholder.com/150';
   const profileImageId = user?.profile?.image || defaultImageId;
 
   const { loggedUser, isLoadingLoggedUser } = useLoggedUser();
   const navigate = useNavigate();
- 
+
   const handleLogout = async () => {
     const result = await Swal.fire({
       title: 'Are you sure?',
@@ -48,31 +47,30 @@ const UserMenu = ({ user }) => {
   onClick={() => navigate('/login')}
   className="inline-flex items-center gap-x-2 text-white font-bold py-2 px-4 rounded w-full sm:w-auto transition duration-300 ease-in-out bg-gradient-to-r from-pink-600 via-violet-600 to-violet-600 hover:shadow-lg hover:from-pink-700 hover:to-violet-800"
 >
-  <FaSignInAlt className="w-5 h-5" /> 
+  <FaSignInAlt className="w-5 h-5" />
   Signup
 </button>
     );
   }
- 
 
   return (
     <Menu as="div" className="relative inline-block text-left dark:bg-gray-700">
       <Menu.Button className="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-      {profileImageId && (
-        <Image
-          cloudName={cloudName}
-          publicId={profileImageId}
-          width="auto"
-          crop="scale"
-          quality="auto"
-          fetchFormat="auto"
-          secure={true}
-          dpr="auto"
-          responsive={true}
-          className="w-8 h-8 rounded-full"
-          alt="User profile image"
-        />
-      )}
+        {profileImageId && (
+          <Image
+            cloudName={cloudName}
+            publicId={profileImageId}
+            width="auto"
+            crop="scale"
+            quality="auto"
+            fetchFormat="auto"
+            secure={true}
+            dpr="auto"
+            responsive={true}
+            className="w-7 h-7 rounded-full"
+            alt="User profile image"
+          />
+        )}
       </Menu.Button>
 
       <Transition
@@ -98,7 +96,20 @@ const UserMenu = ({ user }) => {
                 </button>
               )}
             </Menu.Item>
-            {/* ... other menu items ... */}
+            <Menu.Item>
+              {({ active }) => (
+                <Link to="/settings"> {/* Add Link to the settings page */}
+                  <button
+                    className={`${
+                      active ? 'bg-gray-100' : ''
+                    } group flex dark:text-white rounded-md items-center w-full px-2 py-2 text-sm`}
+                  >
+                    Settings
+                    <FaCog className="ml-2" /> {/* Add the FaCog icon */}
+                  </button>
+                </Link>
+              )}
+            </Menu.Item>
             <Menu.Item>
               {({ active }) => (
                 <button

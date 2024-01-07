@@ -17,10 +17,10 @@
     "superAdminEmail": "admin@seyimsmultimedia.com",
     "facebookAppId": "YOUR_FACEBOOK_APP_ID",
     "facebookSecret": "YOUR_FACEBOOK_SECRET",
-    "cloudinary": {
-      "CLOUD_NAME": "swed-dev",
-      "API_KEY": "891695162945397",
-      "API_SECRET": "NqgWjqg6ANiehloQ0N6Zwm5hUy0"
+      "cloudinary": {
+      "CLOUD_NAME": "techpulse",
+      "API_KEY": "584782476666153",
+      "API_SECRET": "uZnoGzeKew0CsxgCKEil6LX80dM"
     }
   },
   "ROOT_URL": "https://www.thatconnect.meteorapp.com",

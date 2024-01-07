@@ -1,10 +1,10 @@
 // Import Picker from meteorhacks:picker
 import { Picker } from 'meteor/meteorhacks:picker';
 import { Roles } from 'meteor/alanning:roles';
+import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 // Import your UsersCollection
 import { UsersCollection } from '../api/collections/UsersCollection';
-
 
 // Define a new Picker route for searching users
 Picker.route('/search-users', (params, req, res) => {
@@ -19,7 +19,7 @@ Picker.route('/search-users', (params, req, res) => {
         // Add additional fields for searching here based on your schema
       ],
     },
-    { fields: { username: 1, profile: 1 } }
+    { fields: { username: 1, profile: 1 } },
   ).fetch();
 
   // Prepare user data
@@ -53,23 +53,22 @@ Picker.route('/all-users', (params, req, res, next) => {
   }
 });
 
-
-Picker.route('/admin-route',async (params, req, res, next) => {
+Picker.route('/admin-route', async (params, req, res, next) => {
   // This assumes you have a way to get the userId from the request, e.g., a token.
   const authToken = req.headers['meteor-authorization']; // Replace with your token's header key
   const hashedToken = Accounts._hashLoginToken(authToken);
 
   // Find the user by the hashed token
   const user = Meteor.users.findOneAsync(
-    { "services.resume.loginTokens.hashedToken": hashedToken },
-    { fields: { _id: 1, roles: 1 } }
+    { 'services.resume.loginTokens.hashedToken': hashedToken },
+    { fields: { _id: 1, roles: 1 } },
   );
 
   if (!user) {
     res.end(JSON.stringify({ error: 'Not authorized' }));
     return;
   }
-  
+
   const userId = user._id;
   const isAdmin = Roles.userIsInRole(userId, 'admin');
 
@@ -79,4 +78,3 @@ Picker.route('/admin-route',async (params, req, res, next) => {
     res.end(JSON.stringify({ error: 'Not authorized' }));
   }
 });
-

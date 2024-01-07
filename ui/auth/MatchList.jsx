@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTracker } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
-import { UserProfiles, Messages } from '../../api/collections/UserProfiles';
+import { UserProfiles } from '../../api/collections/UserProfiles';
+import { PrivateMessages } from '../../api/collections/privateMessages.collection';
 
 const MatchList = () => {
   const currentUser = useTracker(() => Meteor.user(), []);
@@ -33,7 +34,7 @@ const MatchList = () => {
   const startChat = (otherUserId) => {
     console.log('Starting chat with user ID:', otherUserId);
 
-    const chatExists = !!Messages.findOne({
+    const chatExists = !!PrivateMessages.findOne({
       $or: [
         { senderId: currentUser._id, receiverId: otherUserId },
         { senderId: otherUserId, receiverId: currentUser._id },

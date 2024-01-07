@@ -6,21 +6,21 @@ export const UsersCollection = Meteor.users;
 
 UsersCollection.attachSchema(new SimpleSchema({
   username: {
-  type: String,
-  min: 3,
-  max: 20,
-  optional: true, 
-  custom() {
-    if (Meteor.isServer && this.isInsert && this.value) {
-      const username = this.value;
-      const userExists = UsersCollection.findOne({ username, _id: { $ne: this.docId } });
+    type: String,
+    min: 3,
+    max: 20,
+    optional: true,
+    custom () {
+      if (Meteor.isServer && this.isInsert && this.value) {
+        const username = this.value;
+        const userExists = UsersCollection.findOne({ username, _id: { $ne: this.docId } });
 
-      if (userExists) {
-        return SimpleSchema.ErrorTypes.VALUE_NOT_UNIQUE;
+        if (userExists) {
+          return SimpleSchema.ErrorTypes.VALUE_NOT_UNIQUE;
+        }
       }
-    }
+    },
   },
-},
   _id: String,
   createdAt: {
     type: Date,
@@ -31,15 +31,16 @@ UsersCollection.attachSchema(new SimpleSchema({
   profile: {
     type: Object,
     optional: true,
-    blackbox: true, // Use blackbox if you don't want to specify all nested fields
+    blackbox: true,
   },
-  'profile.image': {
-    type: String,
+  'profile.images': {
+    type: Array,
     optional: true,
+    defaultValue: [],
   },
-  newImage: {
-    type: String,
-    optional: true,
+  'profile.images.$': {
+    type: Object,
+    blackbox: true,
   },
   emails: {
     type: Array,

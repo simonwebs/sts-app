@@ -1,37 +1,42 @@
 import React from 'react';
+import Select from 'react-select';
 
-
-const LocationDetails = ({ formData, setFormData }) => {
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    // Update form data using the provided setFormData function from the parent component
-    setFormData({ [name]: value });
+const LocationDetails = ({ formData, updateFormData, nextStep }) => {
+  const handleSelectChange = (name, selectedOption) => {
+    updateFormData({ [name]: selectedOption.value });
   };
-  
+
+  const countryOptions = [
+    { value: 'usa', label: 'USA' },
+    { value: 'canada', label: 'Canada' },
+    // Add more countries as needed
+  ];
+
+  const cityOptions = [
+    { value: 'new-york', label: 'New York' },
+    { value: 'toronto', label: 'Toronto' },
+    // Add more cities as needed
+  ];
+
   return (
-    <div className="space-y-4 p-4">
+    <div>
       <div>
-        <label htmlFor="country" className="block text-sm font-medium text-gray-700">Country</label>
-        <input
-          id="country"
-          type="text"
+        <label htmlFor="country">Country:</label>
+        <Select
           name="country"
-          placeholder="Country"
-          value={formData.country}
-          onChange={handleChange}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          value={countryOptions.find((option) => option.value === formData?.country)}
+          options={countryOptions}
+          onChange={(selectedOption) => handleSelectChange('country', selectedOption)}
         />
       </div>
+
       <div>
-        <label htmlFor="city" className="block text-sm font-medium text-gray-700">City</label>
-        <input
-          id="city"
-          type="text"
+        <label htmlFor="city">City:</label>
+        <Select
           name="city"
-          placeholder="City"
-          value={formData.city}
-          onChange={handleChange}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          value={cityOptions.find((option) => option.value === formData?.city)}
+          options={cityOptions}
+          onChange={(selectedOption) => handleSelectChange('city', selectedOption)}
         />
       </div>
     </div>

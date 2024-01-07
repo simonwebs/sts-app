@@ -46,7 +46,7 @@ const AdminProfilePage = () => {
     return <div className='flex justify-center items-center'>User not found.</div>;
   }
 
-  const cloud_name = 'cedar-christian-bilingual-school';
+  const cloudName = 'techpulse';
   const profileImageId = user?.profile?.image;
  const bannerImageId = user?.profile?.bannerImage ? user.profile.bannerImage.split('/upload/').pop() : null;
 
@@ -80,7 +80,7 @@ console.log(`Banner Image ID: ${bannerImageId}`);
       <div ref={imageRef} style={bannerStyle} className="banner">
         {imageLoaded && bannerImageId ? (
           <Image
-            cloud_name={cloud_name}
+            cloudName={cloudName}
             publicId={bannerImageId}
             loading="lazy" 
             className="h-full w-full object-cover rounded-lg cursor-pointer"
@@ -121,7 +121,7 @@ console.log(`Banner Image ID: ${bannerImageId}`);
               />
             ) : (
               <Image
-                cloud_name={cloud_name}
+                cloudName={cloudName}
                 publicId={profileImageId}
                 width="auto"
                 crop="scale"

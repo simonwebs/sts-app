@@ -2,16 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { UsersCollection } from '../collections/UsersCollection';
-const cloudinary = require('cloudinary').v2;
+import cloudinary from 'cloudinary';
 
-const cloud_name = Meteor.settings.private.cloudinary.CLOUD_NAME;
-const apiKey = Meteor.settings.private.cloudinary.API_KEY;
-const apiSecret = Meteor.settings.private.cloudinary.API_SECRET;
+const { CLOUD_NAME, API_KEY, API_SECRET } = Meteor.settings.private.cloudinary;
 
-cloudinary.config({
-  cloud_name,
-  api_key: apiKey,
-  api_secret: apiSecret,
+cloudinary.v2.config({
+  cloud_name: CLOUD_NAME,
+  api_key: API_KEY,
+  api_secret: API_SECRET,
 });
 
 UsersCollection._ensureIndex({ _id: 1 });
@@ -330,7 +328,7 @@ Meteor.methods({
 
     Meteor.users.update(this.userId, { $set: { 'profile.color': color } });
   },
-   'users.getUserById': function(userId) {
+  'users.getUserById': function (userId) {
     check(userId, String);
 
     // Make sure the user is logged in before fetching user data
@@ -341,10 +339,10 @@ Meteor.methods({
     // Fetch the user data from the Meteor.users collection
     const user = Meteor.users.findOne({ _id: userId }, {
       fields: {
-        'username': 1,
-        'profile': 1,
-        'createdAt': 1
-      }
+        username: 1,
+        profile: 1,
+        createdAt: 1,
+      },
     });
 
     if (!user) {
@@ -368,7 +366,7 @@ Meteor.methods({
     Meteor.users.update(userId, { $pop: { 'services.resume.loginTokens': -1 } });
   },
 
-   'getUserEmail': function() {
+  getUserEmail: function () {
     const user = Meteor.users.findOne(this.userId);
 
     if (!user) {
@@ -377,40 +375,46 @@ Meteor.methods({
 
     return user.emails[0].address;
   },
-    'users.uploadBannerImage': async function (croppedImage) {
-  check(croppedImage, String);
+  'users.uploadBannerImage': async function (croppedImage) {
+    check(croppedImage, String);
 
-  if (!this.userId) {
-    throw new Meteor.Error('not-authorized', 'You must be logged in to update your banner image');
-  }
+    if (!this.userId) {
+      throw new Meteor.Error('not-authorized', 'You must be logged in to update your banner image');
+    }
 
-  try {
-    // Upload the cropped image to Cloudinary with transformations
-    const result = await cloudinary.uploader.upload(croppedImage, {
-      folder: "user_banners",
-      resource_type: 'image',
-      quality: "auto:good",
-      fetch_format: "auto",
-      transformation: [
-        { width: 800, crop: "scale" }, // Example transformation: adjust as needed
-      ],
-    });
+    try {
+      // console.log('Uploading image to Cloudinary...');
 
-    // Update the user's banner image in the database with the URL from Cloudinary
-    Meteor.users.update(this.userId, {
-      $set: {
-        'profile.bannerImage': result.secure_url, // Use secure_url to get the HTTPS link
-      },
-    });
-  } catch (error) {
-    console.error('Error uploading to Cloudinary:', error);
-    throw new Meteor.Error('upload-failed', 'Failed to upload image to Cloudinary');
-  }
-},
+      // Upload the cropped image to Cloudinary with transformations
+      const result = await cloudinary.v2.uploader.upload(croppedImage, {
+        folder: 'user_banners',
+        resource_type: 'image',
+        quality: 'auto:good',
+        fetch_format: 'auto',
+        transformation: [
+          { width: 800, crop: 'scale' }, // Example transformation: adjust as needed
+        ],
+      });
 
-  'user.login'(usernameOrEmail, password) {
+      // console.log('Cloudinary upload successful:', result);
+
+      // Update the user's banner image in the database with the URL from Cloudinary
+      Meteor.users.update(this.userId, {
+        $set: {
+          'profile.bannerImage': result.secure_url, // Use secure_url to get the HTTPS link
+        },
+      });
+
+      // console.log('User banner image updated successfully');
+    } catch (error) {
+      // console.error('Error uploading to Cloudinary:', error);
+      throw new Meteor.Error('upload-failed', 'Failed to upload image to Cloudinary');
+    }
+  },
+
+  'user.login' (usernameOrEmail, password) {
     const user = Accounts.findUserByUsername(usernameOrEmail) || Accounts.findUserByEmail(usernameOrEmail);
-    
+
     if (!user) {
       throw new Meteor.Error('user-not-found', 'User not found');
     }
@@ -427,8 +431,113 @@ Meteor.methods({
     // Return the userId and the hashedToken
     return {
       userId: user._id,
-      token: hashedToken
+      token: hashedToken,
     };
   },
+  'users.uploadProfileImage': async function (base64Image) {
+    console.log('Server method: users.uploadProfileImage invoked');
+    check(base64Image, String);
 
+    if (!this.userId) {
+      throw new Meteor.Error('not-authorized');
+    }
+
+    try {
+      console.log('Uploading image to Cloudinary...');
+      const result = await cloudinary.uploader.upload(base64Image, {
+        resource_type: 'auto',
+        responsive: true,
+      });
+      console.log('Cloudinary upload result:', result);
+
+      const updateObject = {
+        $set: {
+          'profile.image': result.public_id,
+        },
+      };
+
+      // Add information about the image update to the user's profile
+      if (result.public_id) {
+        updateObject.$push = {
+          'profile.images': {
+            publicId: result.public_id,
+            timestamp: new Date(),
+          },
+        };
+      }
+
+      Meteor.users.update(this.userId, updateObject);
+
+      console.log('Profile image uploaded successfully!');
+    } catch (error) {
+      console.error('Upload failed:', error);
+      throw new Meteor.Error('Upload failed', error.message);
+    }
+  },
+  'users.updateProfileImage' (userId, selectedGalleryImage) {
+    // Ensure the user is logged in
+    if (!this.userId) {
+      throw new Meteor.Error('not-authorized', 'User not authorized to update profile image.');
+    }
+
+    // Validate input
+    check(userId, String);
+    check(selectedGalleryImage, Object); // Update the validation based on your gallery image data structure
+
+    // Your logic to update the profile image in the server-side database
+    // Example: Update the user profile image data in the UsersCollection
+    UsersCollection.update(
+      { _id: userId },
+      { $set: { 'profile.images': selectedGalleryImage } },
+    );
+  },
+  'users.deleteImage' (publicId) {
+    // Check if the user is logged in
+    if (!this.userId) {
+      throw new Meteor.Error('not-authorized', 'You are not authorized to delete images.');
+    }
+
+    // Validate the publicId and perform additional checks if needed
+
+    // Remove the image from the user's profile
+    UsersCollection.update({ _id: this.userId }, { $pull: { 'profile.images': { publicId } } });
+
+    return 'Image deleted successfully.';
+  },
+  updateUserName (userId, newName) {
+    check(userId, String);
+    check(newName, String);
+
+    // Implement the logic to update the name in the database
+    // For example:
+    Meteor.users.update({ _id: userId }, { $set: { 'profile.name': newName } });
+  },
+  likeProfile (profileId) {
+    check(profileId, String);
+
+    if (!this.userId) {
+      throw new Meteor.Error('not-authorized', 'You must be logged in to like a profile');
+    }
+
+    // Check if the user has already liked this profile
+    const alreadyLiked = Meteor.users.findOne({ _id: this.userId, 'profile.likes': profileId });
+
+    if (alreadyLiked) {
+      throw new Meteor.Error('already-liked', 'You have already liked this profile');
+    }
+
+    // Perform the like action
+    Meteor.users.update(
+      { _id: this.userId },
+      { $addToSet: { 'profile.likes': profileId } },
+    );
+
+    // Update the liked user's profile to track the liker
+    Meteor.users.update(
+      { _id: profileId },
+      { $addToSet: { 'profile.likedBy': this.userId } },
+    );
+
+    return true; // or any other value to indicate success
+  },
 });

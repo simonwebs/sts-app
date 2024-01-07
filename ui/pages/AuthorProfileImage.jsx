@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-const AuthorProfileImage = ({ cloud_name = 'swed-dev', authorImage }) => {
+const AuthorProfileImage = ({ cloudName = 'techpulse', authorImage }) => {
   const [errorLoading, setErrorLoading] = useState(false);
 
   let profileImageUrl;
   if (authorImage && authorImage.startsWith('http')) {
     profileImageUrl = authorImage;
   } else {
-    profileImageUrl = `https://res.cloudinary.com/${cloud_name}/image/upload/w_auto,c_scale,q_auto,f_auto,dpr_auto/${authorImage}`;
+    profileImageUrl = `https://res.cloudinary.com/${cloudName}/image/upload/w_auto,c_scale,q_auto,f_auto,dpr_auto/${authorImage}`;
   }
 
   const [width, setWidth] = useState(window.innerWidth);
@@ -28,7 +28,7 @@ const AuthorProfileImage = ({ cloud_name = 'swed-dev', authorImage }) => {
   let imageSize = width < 640 ? '24px' : '60px';
   // Reduce imageSize by 20%
   imageSize = `calc(${imageSize} * 0.8)`;
-  let borderRadius = '50%';
+  const borderRadius = '50%';
 
   const handleError = () => {
     setErrorLoading(true);
@@ -44,10 +44,10 @@ const AuthorProfileImage = ({ cloud_name = 'swed-dev', authorImage }) => {
       alt="Author Profile"
       className="author-profile-image-hover" // Add this class
       style={{
-        width: imageSize, 
-        height: imageSize, 
-        borderRadius, 
-        objectFit: 'cover' /* This ensures the image retains its aspect ratio */
+        width: imageSize,
+        height: imageSize,
+        borderRadius,
+        objectFit: 'cover', /* This ensures the image retains its aspect ratio */
       }}
       onError={handleError}
     />
@@ -55,7 +55,7 @@ const AuthorProfileImage = ({ cloud_name = 'swed-dev', authorImage }) => {
 };
 
 AuthorProfileImage.propTypes = {
-  cloud_name: PropTypes.string,
+  cloudName: PropTypes.string,
   authorImage: PropTypes.string.isRequired,
 };
 

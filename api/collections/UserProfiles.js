@@ -1,12 +1,28 @@
+import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-const UserProfilePhotoSchema = new SimpleSchema({
-  photoUrl: String,
-  isProfilePhoto: {
+export const UsersCollection = Meteor.users;
+
+const BehaviorSchema = new SimpleSchema({
+  behavior: {
+    type: String,
+    allowedValues: ['introverted', 'extroverted', 'ambivert'],
+    optional: true,
+  },
+});
+
+const DisabilitySchema = new SimpleSchema({
+  hasDisability: {
     type: Boolean,
     defaultValue: false,
   },
+  disabilityDescription: {
+    type: String,
+    optional: true,
+  },
+  // Add more specific disability-related fields as needed
+  // For example: isBlind, isDeaf, isCrippled, etc.
 });
 
 const UserProfileSchema = new SimpleSchema({
@@ -18,6 +34,10 @@ const UserProfileSchema = new SimpleSchema({
       if (this.isInsert && !this.isSet) return new Date();
     },
   },
+  disability: {
+    type: DisabilitySchema,
+  },
+  behavior: BehaviorSchema,
   profileCreatedAt: {
     type: Date,
     autoValue () {
@@ -31,7 +51,10 @@ const UserProfileSchema = new SimpleSchema({
         return { $setOnInsert: new Date() };
       }
     },
-    // denyUpdate is not needed because autoValue handles it
+  },
+  agreedToTerms: {
+    type: Boolean,
+    defaultValue: false,
   },
   firstName: {
     type: String,
@@ -60,7 +83,7 @@ const UserProfileSchema = new SimpleSchema({
   },
   lookingForGender: {
     type: String,
-    allowedValues: ['male', 'female', 'other', 'any'],
+    allowedValues: ['male', 'female', 'other'],
     optional: true,
   },
   lookingForBodyHeight: {
@@ -89,12 +112,39 @@ const UserProfileSchema = new SimpleSchema({
     type: String,
     optional: true,
   },
-  profilePhotos: {
+  interests: {
     type: Array,
+    optional: true,
+  },
+  'interests.$': {
+    type: Object,
+  },
+  'interests.$.interestName': {
+    type: String,
+  },
+  relationshipPreferences: {
+    type: String,
+    allowedValues: ['marriage', 'friendship', 'other'],
+    defaultValue: 'marriage',
+    optional: true,
+  },
+  compatibility: {
+    type: Object,
+    defaultValue: {},
+  },
+  profile: {
+    type: Object,
+    optional: true,
+    blackbox: true,
+  },
+  'profile.images': {
+    type: Array,
+    optional: true,
     defaultValue: [],
   },
-  'profilePhotos.$': {
-    type: UserProfilePhotoSchema,
+  'profile.images.$': {
+    type: Object,
+    blackbox: true,
   },
   likedByUsers: {
     type: Array,
@@ -110,3 +160,10 @@ const UserProfileSchema = new SimpleSchema({
 
 export const UserProfiles = new Mongo.Collection('userProfiles');
 UserProfiles.attachSchema(UserProfileSchema);
+
+// Ensure index for UsersCollection
+Meteor.startup(() => {
+  if (Meteor.isServer) {
+    UsersCollection._ensureIndex({ username: 1 }, { unique: true });
+  }
+});

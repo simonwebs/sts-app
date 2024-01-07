@@ -12,16 +12,27 @@ const checkUserRole = (userId, roles) => {
 
 // Meteor Methods
 Meteor.methods({
-  //z
-  'roles.isAdmin'(){
-const { userId } = this;
-if(!userId){
-throw new Error('Access denied');
-}
-return Roles.userIsInRole(userId, AppRoles.ADMIN);
+  'roles.isAdmin' () {
+    const { userId } = this;
+    console.log('Current user ID:', userId);
+
+    if (!userId) {
+      console.error('Access denied: No user ID');
+      throw new Error('Access denied');
+    }
+
+    const isAdmin = Roles.userIsInRole(userId, AppRoles.ADMIN);
+    console.log('Is admin?', isAdmin);
+
+    if (!isAdmin) {
+      console.error('Access denied: User is not admin');
+      throw new Error('Access denied');
+    }
+
+    return true;
   },
 
-  'sendLoginToken': function (email) {
+  sendLoginToken: function (email) {
     check(email, String);
 
     const user = Accounts.findUserByEmail(email);
@@ -36,7 +47,7 @@ return Roles.userIsInRole(userId, AppRoles.ADMIN);
 
     const stampedToken = Accounts._generateStampedLoginToken();
     Accounts._insertLoginToken(user._id, stampedToken);
-    
+
     Email.send({
       to: email,
       from: 'Seychelles IMS Multimedia <noreply@seyimsmultimedia.com>',
@@ -44,7 +55,7 @@ return Roles.userIsInRole(userId, AppRoles.ADMIN);
       text: `Here is your login token: ${stampedToken.token}\n\nYou can use it to sign in securely to your account.`,
     });
   },
-  'getUserData': function (userId) {
+  getUserData: function (userId) {
     check(userId, String);
 
     // Check if the current user has permission to fetch user data
@@ -53,7 +64,7 @@ return Roles.userIsInRole(userId, AppRoles.ADMIN);
     }
 
     const user = Meteor.users.findOne({ _id: userId }, {
-      fields: { 'profile.name': 1, 'emails.address': 1 }
+      fields: { 'profile.name': 1, 'emails.address': 1 },
     });
 
     if (!user) {
@@ -62,7 +73,7 @@ return Roles.userIsInRole(userId, AppRoles.ADMIN);
 
     return user;
   },
-    'user.checkIfAdmin'() {
+  'user.checkIfAdmin' () {
     if (!this.userId) {
       throw new Meteor.Error('not-authorized', 'You must be logged in to check if you are an admin.');
     }

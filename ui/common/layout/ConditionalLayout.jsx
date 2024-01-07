@@ -15,7 +15,7 @@ const InnerLayout = ({ children, currentUserId }) => {
   }
 
   const shouldHideHeaderAndFooter = currentUser?.roles?.some(role =>
-    ['admin', 'super-admin'].includes(role)
+    ['admin', 'super-admin'].includes(role),
   );
 
   return (

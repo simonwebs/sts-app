@@ -17,7 +17,7 @@ const UpdateBannerImage = () => {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onload = () => {
-    //  console.log('Image loaded:', reader.result); 
+    //  console.log('Image loaded:', reader.result);
       setBannerImage(reader.result);
     };
     reader.readAsDataURL(file);
@@ -35,7 +35,7 @@ const UpdateBannerImage = () => {
     }
 
     const croppedImage = cropperRef.current.cropper.getCroppedCanvas().toDataURL();
-   // console.log('Cropped image:', croppedImage); // Log the cropped image data
+    // console.log('Cropped image:', croppedImage); // Log the cropped image data
 
     // Start the fake progress bar animation
     setProgress(0);
@@ -54,14 +54,14 @@ const UpdateBannerImage = () => {
     Meteor.call('users.uploadBannerImage', croppedImage, (error) => {
       clearInterval(interval);
       if (error) {
-     //   console.error('Error uploading banner image:', error);
+        //   console.error('Error uploading banner image:', error);
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
           text: 'Failed to upload banner image!',
         });
       } else {
-     //   console.log('Banner image uploaded successfully!');
+        //   console.log('Banner image uploaded successfully!');
         Swal.fire('Success', 'Banner image uploaded successfully!', 'success');
         setBannerImage(null);
       }

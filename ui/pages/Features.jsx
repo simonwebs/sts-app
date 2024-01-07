@@ -1,5 +1,5 @@
 import React from 'react';
-  import { CloudArrowUpIcon, LockClosedIcon, ServerIcon } from '@heroicons/react/20/solid';
+import { CloudArrowUpIcon, LockClosedIcon, ServerIcon } from '@heroicons/react/20/solid';
 import Explore from '../components/userProfile/Explore';
 
 const features = [
@@ -11,42 +11,46 @@ const features = [
   },
   {
     name: 'Golden Moments',
-    description: "Elevate your search with our Gold tier, designed for those looking for a bit more sparkle in their quest. Enjoy enhanced features like advanced search filters, video profiles",
+    description: 'Elevate your search with our Gold tier, designed for those looking for a bit more sparkle in their quest. Enjoy enhanced features like advanced search filters, video profiles',
     icon: CloudArrowUpIcon,
   },
   {
     name: 'Platinum Promises',
-    description: " For the ultimate dating experience, our Platinum tier offers an exclusive suite of benefits. Indulge in the luxury of personalized matchmaking services, one-on-one dating coaching, ",
+    description: 'For the ultimate dating experience, our Platinum tier offers an exclusive suite of benefits. Indulge in the luxury of personalized matchmaking services, one-on-one dating coaching',
     icon: ServerIcon,
   },
 ];
+
 const Features = () => {
+  const isSmallScreen = window.innerWidth < 640;
+
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-4">
+    <div className="h-full w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-4 relative bg-white features">
       <div className="flex flex-wrap items-start -mx-8">
-        {/* Right side - Explore component */}
-        <div className="w-full lg:w-1/2 px-4 flex items-center justify-center sm:mb-12">
-          <Explore className="w-full" /> {/* Make sure Explore component accepts className prop */}
+        {/* Right side - Explore component (conditionally rendered) */}
+        <div className={`w-full lg:w-1/2 px-4 ${isSmallScreen ? 'mb-8' : ''}`}>
+          <Explore className="w-full" />
         </div>
 
-        {/* Left side - Features list */}
-        <div className="w-full lg:w-1/2 px-4">
-          <div className="space-y-6">
-            {features.map((feature, index) => (
-              <div key={index} className="flex items-start">
-                <feature.icon className="h-6 w-6 flex-shrink-0 text-indigo-600" aria-hidden="true" />
-                <div className="ml-4">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-300">{feature.name}</h3>
-                  <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
+        {/* Left side - Features list (conditionally rendered) */}
+        {!isSmallScreen && (
+          <div className="w-full lg:w-1/2 px-4">
+            <div className="space-y-6">
+              {features.map((feature, index) => (
+                <div key={index} className="flex items-start">
+                  <feature.icon className="h-6 w-6 flex-shrink-0 text-indigo-600" aria-hidden="true" />
+                  <div className="ml-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-300">{feature.name}</h3>
+                    <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
 };
 
-  export default Features;
-
+export default Features;

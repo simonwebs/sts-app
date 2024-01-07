@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
+import { check, Match } from 'meteor/check';
 import { Transactions } from '../collections/TransactionCollection';
 
 Meteor.methods({
@@ -8,7 +8,7 @@ Meteor.methods({
       userId: String,
       text: String,
       amount: Number,
-        grade: Match.Maybe(String),
+      grade: Match.Maybe(String),
       category: String,
     });
 
@@ -101,5 +101,5 @@ Meteor.methods({
 
     return { totalIncome, totalExpense };
   },
- 
+
 });

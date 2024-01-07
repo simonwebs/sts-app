@@ -6,29 +6,18 @@ import { Image, Transformation } from 'cloudinary-react';
 import TimeSince from '../components/TimeSince';
 import { PrivateMessages } from '../../api/collections/privateMessages.collection';
 import { UserProfiles } from '../../api/collections/UserProfiles';
-import UpdateProfileImage from '../pages/admin/updateData/UpdateProfileImage';
+import UserProfilePhotos from '../components/userProfile/UserProfilePhotos';
 import UpdateBannerImage from '../pages/admin/updateData/UpdateBannerImage';
 import ChatWindow from '../components/chat/ChatWindow';
+import { ChatBubbleBottomCenterIcon } from '@heroicons/react/24/outline';
 
 const ProfileHeader = () => {
   const { userId } = useParams();
-  const cloudName = 'swed-dev';
+  const cloudName = 'techpulse';
   const [imageVersion, setImageVersion] = useState(Date.now());
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [newMessage, setNewMessage] = useState(null);
   const location = useLocation();
-
-  const refreshProfileImage = () => {
-    setImageVersion(Date.now());
-  };
-
-  const closeChat = () => {
-    setIsChatOpen(false);
-  };
-
-  const openChat = () => {
-    setIsChatOpen(true);
-  };
 
   const { user, userProfile, isLoading, isCurrentUserProfile } = useTracker(() => {
     const noDataAvailable = { user: null, userProfile: null, isLoading: true, isCurrentUserProfile: false };
@@ -37,7 +26,7 @@ const ProfileHeader = () => {
       return noDataAvailable;
     }
 
-    const userSubscription = Meteor.subscribe('userDetails', userId);
+    const userSubscription = Meteor.subscribe('allUsersDetails', userId);
     if (!userSubscription.ready()) {
       return { ...noDataAvailable, isLoading: true };
     }
@@ -46,7 +35,6 @@ const ProfileHeader = () => {
     const userProfile = UserProfiles.findOne({ authorId: userId });
     const isLoading = !user || !userProfile;
     const isCurrentUserProfile = Meteor.userId() === userId;
-
     return { user, userProfile, isLoading, isCurrentUserProfile };
   }, [userId, imageVersion]);
 
@@ -64,7 +52,7 @@ const ProfileHeader = () => {
           { senderId: userId, receiverId: Meteor.userId() },
         ],
       },
-      { sort: { timestamp: -1 } }
+      { sort: { timestamp: -1 } },
     ).observeChanges({
       added: (id, message) => {
         setNewMessage(message);
@@ -89,27 +77,27 @@ const ProfileHeader = () => {
     return <div>Loading...</div>;
   }
 
-  if (!userProfile) {
+  if (!userProfile || !user) {
     return <div>User profile not found.</div>;
   }
 
   const profileImageId = user?.profile?.image;
   const bannerImageId = user?.profile?.bannerImage ? user.profile.bannerImage.split('/upload/').pop() : null;
-  const defaultBannerImage = "https://via.placeholder.com/150";
-  const defaultProfileImage = "https://via.placeholder.com/150";
+  const defaultBannerImage = 'https://via.placeholder.com/150';
+  const defaultProfileImage = 'https://via.placeholder.com/150';
 
   const profileImageUrl = `${profileImageId || defaultProfileImage}?_v=${imageVersion}`;
 
-  const userName = userProfile?.firstName || userProfile?.lastName || user?.username || 'Username not ready';
+  const { username } = user;
 
   const showChatButton = !isCurrentUserProfile && location.pathname !== '/own-profile';
 
   return (
-    <div className="bg-gray-100 w-full dark:bg-gray-700 mt-16 py-2 px-1">
+    <div className="bg-gray-100 w-full dark:bg-gray-700 py-2 px-1">
       <div className="relative w-full h-56 overflow-hidden shadow-md">
         <Image
           cloudName={cloudName}
-          publicId={bannerImageId || defaultBannerImage || profileImageUrl} 
+          publicId={bannerImageId || defaultBannerImage || profileImageUrl}
           fetchFormat="auto"
           quality="auto"
           secure={true}
@@ -131,7 +119,7 @@ const ProfileHeader = () => {
         <div className="relative w-36 h-36 mx-auto">
           <Image
             cloudName={cloudName}
-            publicId={profileImageId || defaultProfileImage} 
+            publicId={profileImageId || defaultProfileImage}
             width="auto"
             crop="scale"
             quality="auto"
@@ -145,12 +133,14 @@ const ProfileHeader = () => {
           />
           {isCurrentUserProfile && (
             <div className="absolute -bottom-3 -right-3">
-              <UpdateProfileImage onImageUpdated={refreshProfileDetails} />
+              <UserProfilePhotos onImageUpdated={refreshProfileDetails} />
             </div>
           )}
         </div>
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mt-4">
-          {userName}
+
+              {username}
+
         </h2>
         <p className={`text-sm ${isOnline ? 'text-green-500' : 'text-red-500'}`}>
           {isOnline ? 'Online' : 'Offline'}
@@ -159,17 +149,27 @@ const ProfileHeader = () => {
           <TimeSince date={user.status.lastOnline} className="text-xs text-gray-500" />
         )}
       </div>
-      {showChatButton && (
-        <button
-          onClick={openChat}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
-        >
-          Start Chat
-        </button>
-      )}
-      {isChatOpen && (
-        <ChatWindow selectedUser={user} onClose={closeChat} incomingMessages={[newMessage]} />
-      )}
+     <div className='flex flex-col items-center justify-center sm:flex-row sm:items-baseline sm:justify-start p-6'>
+  {showChatButton && (
+    <span className="mr-3 text-xs dark:text-gray-300">
+      {`Hello! please click chat button to start to chatting with ${username}`}
+    </span>
+  )}
+  {showChatButton && (
+    <button
+      onClick={() => setIsChatOpen(true)}
+      className="inline-flex items-center gap-x-1.5 rounded-md bg-gradient-to-r from-teal-500
+  via-emerald-500 to-lime-600 hover:shadow-lg hover:opacity-75 hover:scale-105 hover:bg-gradient-to-r hover:from-teal-400 hover:via-emerald-400 hover:to-lime-500 text-white py-1 px-1 mt-3"
+    >
+      <ChatBubbleBottomCenterIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
+      Chat
+    </button>
+  )}
+  {isChatOpen && (
+    <ChatWindow selectedUser={user} onClose={() => setIsChatOpen(false)} incomingMessages={[newMessage]} />
+  )}
+</div>
+
     </div>
   );
 };

@@ -1,90 +1,147 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FaHeart, FaTimes, FaInfoCircle } from 'react-icons/fa';
-
+import Swal from 'sweetalert2';
+import { Meteor } from 'meteor/meteor';
+import { Image, Transformation } from 'cloudinary-react';
+import { Link } from 'react-router-dom';
 
 const ProfileCard = ({ user, onSwipeLeft, onSwipeRight, onViewDetails, likedByUsers }) => {
-  const { _id, firstName, birthDate, personalBio, profilePhotos, isOnline, authorId } = user;
+  const { _id, profile, username, status } = user;
+  const { birthDate, images, personalBio } = profile || {};
+  const likedByCount = likedByUsers?.length;
 
-  const photoUrl = profilePhotos?.[0]?.photoUrl || getDefaultImage();
+  const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
+  const calculateAge = (birthDate) => {
+    const today = new Date();
+    const birthDateObj = new Date(birthDate);
+    let age = today.getFullYear() - birthDateObj.getFullYear();
+    const monthDiff = today.getMonth() - birthDateObj.getMonth();
 
-  const age = birthDate ? new Date().getFullYear() - new Date(birthDate).getFullYear() : 'N/A';
-  const statusStyle = isOnline ? 'text-green-500' : 'text-gray-500';
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
+      age--;
+    }
 
-  const likedByCount = likedByUsers?.length; // No need for optional chaining here since we have a default value
+    return age;
+  };
 
   const handleProfileClick = (event) => {
-    event.stopPropagation(); // Prevent event from propagating to parent elements
-    onViewDetails(authorId);
+    event.stopPropagation();
+    onViewDetails(_id);
+  };
+
+  const handleLikeClick = () => {
+    // Update the UI immediately to provide feedback to the user
+    onSwipeRight(_id);
+
+    // Call the server-side method to handle the like action
+    Meteor.call('likeProfile', _id, (error) => {
+      if (error) {
+        if (error.error === 'already-liked') {
+          // Display a customized SweetAlert2 popup for duplicate liking
+          Swal.fire({
+            title: '<span style="color: #ff3366; font-size: 1.5rem;">Oops! 😕</span>',
+            html: '<span style="color: #6b7280; font-size: 1rem;">You have already liked this profile.</span>',
+            confirmButtonText: 'OK',
+            width: 200,
+            heightAuto: true,
+            customClass: {
+              container: 'smaller-sweetalert',
+              popup: 'smaller-sweetalert-popup',
+              title: 'smaller-sweetalert-title',
+              htmlContainer: 'smaller-sweetalert-html-container',
+              confirmButton: 'smaller-sweetalert-confirm-button',
+            },
+          }).then(() => {
+            // Move to the next profile
+            setCurrentProfileIndex(currentProfileIndex + 1);
+            // Fetch details of the next profile using the updated index
+            // Example: fetchNextProfileDetails(currentProfileIndex);
+          });
+        } else {
+          console.error('Error liking profile:', error);
+          // Optionally, you can show a generic error message to the user
+        }
+      }
+    });
   };
 
   return (
-    <div className="flex justify-center items-center dark:bg-gray-700 w-full"> {/* Removed dark: prefix for consistency */}
-      <div className="profile-card max-w-md mx-auto bg-white dark:bg-gray-700/70 rounded overflow-hidden shadow-lg p-4 text-center"> {/* Removed dark: prefix for consistency */}
-        {/* Image container with conditional margin-bottom */}
-        <div className="relative mb-4 lg:mb-0" onClick={handleProfileClick}> {/* Removed fixed mb-8 and added lg:mb-0 to remove margin at lg screens */}
-          <img src={photoUrl} alt={`${firstName}'s profile`} className="w-full rounded-2xl bg-gray-100 object-cover" /> {/* Removed aspect ratio classes to allow natural image size */}
-          {/* Absolute positioned overlay if needed */}
-          <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-gray-700/10"></div>
+    <div className="flex justify-center items-center w-full">
+      <div className="profile-card max-w-md mx-auto bg-white dark:bg-gray-700 rounded overflow-hidden shadow-lg text-center">
+        <div className="relative mb-4 lg:mb-0">
+          <Link to={`/profile/${_id}`} onClick={() => onViewDetails(_id)}>
+            <div className="overflow-hidden rounded-lg shadow-md relative">
+              {images?.map((image, index) => (
+                <Image
+                  key={index}
+                  cloudName="techpulse"
+                  publicId={image.publicId}
+                  width="auto"
+                  crop="scale"
+                  quality="auto"
+                  fetchFormat="auto"
+                  secure={true}
+                  responsive={true}
+                  alt={`${username}'s Avatar`}
+                  className={`profile-image transition-transform duration-300 ease-in-out transform ${
+                    index > 0 ? 'skew-img' : ''
+                  }`}
+                >
+                  <Transformation aspectRatio="1:1" crop="fill" />
+                </Image>
+              ))}
+            </div>
+          </Link>
         </div>
-        {/* Profile information */}
-        <div className="profile-info">
-          {/* Name and status */}
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold text-gray-700 dark:text-gray-300 font-semibold">{firstName}, {age}</h2>
-            <span className={`status-indicator text-gray-700 dark:text-gray-300 ${statusStyle}`}>
-              {isOnline ? 'Online' : 'Offline'}
+        <div className="profile-info mt-4">
+          <div className="flex items-center mb-2">
+            <h3 className="text-lg font-normal text-gray-700 dark:text-gray-300 font-medium">
+              {username}, {calculateAge(birthDate)}
+            </h3>
+            <span className={`status-indicator mb-5 ${status?.online ? 'text-green-600' : 'text-gray-500'} ml-3`}>
+              {status?.online ? 'Online' : 'Offline'}
             </span>
           </div>
-          {/* Personal bio */}
-          <p className="text-gray-700 text-base dark:text-gray-200">{personalBio}</p>
+          <p className="text-gray-600 text-sm dark:text-gray-400 self-start">{personalBio}</p>
         </div>
-        {/* Profile actions */}
-        <div className="profile-actions mt-4"> {/* Added mt-4 to ensure space between text and buttons */}
+       <div className="profile-actions mt-2">
           <button onClick={() => onSwipeLeft(_id)} className="pass-button">
             <FaTimes size="1em" />
           </button>
-          <button onClick={() => onSwipeRight(_id)} className="like-button relative">
-      <FaHeart size="1em" />
-      {/* Only display the count badge if there are likes */}
-      {likedByCount > 0 && (
-        <span className="like-count absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">
-          {likedByCount}
-        </span>
-      )}
-    </button>
-
-          <button onClick={() => onViewDetails(authorId)} className="details-button">
+          <button onClick={handleLikeClick} className="like-button relative">
+            <FaHeart size="1em" />
+            {likedByCount > 0 && (
+              <span className="like-count absolute top-0.5 right-0.5 bg-red-500 text-white text-xs font-semibold px-2 rounded-full">
+                {likedByCount}
+              </span>
+            )}
+          </button>
+          <button onClick={() => handleProfileClick(_id)} className="details-button">
             <FaInfoCircle size="1em" />
           </button>
         </div>
       </div>
     </div>
   );
-  
 };
-
-
 ProfileCard.propTypes = {
   user: PropTypes.shape({
     _id: PropTypes.string.isRequired,
-    profilePhotos: PropTypes.arrayOf(PropTypes.shape({
-      photoUrl: PropTypes.string,
-      isProfilePhoto: PropTypes.bool,
-    })),
-    firstName: PropTypes.string.isRequired,
-    birthDate: PropTypes.string,
-    personalBio: PropTypes.string,
+    profile: PropTypes.shape({
+      images: PropTypes.arrayOf(PropTypes.string),
+      birthDate: PropTypes.string,
+      personalBio: PropTypes.string,
+    }),
+    username: PropTypes.string,
+    status: PropTypes.shape({
+      online: PropTypes.bool,
+    }),
   }),
   onSwipeLeft: PropTypes.func.isRequired,
   onSwipeRight: PropTypes.func.isRequired,
   onViewDetails: PropTypes.func.isRequired,
+  likedByUsers: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default ProfileCard;
-
-// Helper function to get a default image if none is provided
-const getDefaultImage = () => {
-  // Placeholder for a default image; you should replace the string below with an actual base64 image string
-  return 'data:image/png;base64,iVBORw0KGgo...'; // Full base64 string needed here
-};

@@ -4,7 +4,7 @@ import React from 'react';
 import AuthorProfileImage from '../pages/AuthorProfileImage';
 
 const UserProfileContainer = () => {
-  const cloud_name = 'swed-dev';
+  const cloudName = 'techpulse';
   // Subscribe to user profiles publication
   const { userProfiles, isLoading } = useTracker(() => {
     const subscription = Meteor.subscribe('allUserProfiles');
@@ -22,7 +22,7 @@ const UserProfileContainer = () => {
       {userProfiles.map((user) => (
         <AuthorProfileImage
           key={user._id}
-          cloud_name={cloud_name}
+          cloudName={cloudName}
           authorImage={user.profile.image}
           size={60}
         />

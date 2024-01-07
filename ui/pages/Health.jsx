@@ -1,4 +1,5 @@
 import React from 'react';
+import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data';
 import { Link } from 'react-router-dom';
 import { PostsCollection } from '../../api/collections/posts.collection';
@@ -10,11 +11,11 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
 
-const PostImage = ({ cloud_name, postImage }) => {
+const PostImage = ({ cloudname, postImage }) => {
   return (
     <div className="aspect-[16/9] sm:aspect-[2/1] lg:aspect-square lg:w-64 lg:shrink-0">
       <Image
-        cloud_name={cloud_name}
+        cloudname={cloudname}
         publicId={postImage}
         className="absolute inset-0 h-full w-full rounded-2xl bg-gray-50 object-cover"
         alt="Post"
@@ -25,11 +26,11 @@ const PostImage = ({ cloud_name, postImage }) => {
   );
 };
 
-const AuthorProfileImage = ({ cloud_name, authorImage }) => {
+const AuthorProfileImage = ({ cloudname, authorImage }) => {
   if (authorImage) {
     return (
       <Image
-        cloud_name={cloud_name}
+        cloudname={cloudname}
         publicId={authorImage}
         width="auto"
         crop="scale"
@@ -47,7 +48,7 @@ const AuthorProfileImage = ({ cloud_name, authorImage }) => {
 };
 
 const Health = () => {
-  const cloud_name = 'cedar-christian-bilingual-school';
+  const cloudname = 'techpulse';
 
   const { posts, isLoading } = useTracker(() => {
     const handle = Meteor.subscribe('posts.byCategory', 'health');
@@ -89,7 +90,7 @@ const Health = () => {
                         {posts.map((post) => (
                             <article key={post._id} className="relative isolate flex flex-col gap-8 lg:flex-row">
                                 <div className="relative aspect-[16/9] sm:aspect-[2/1] lg:aspect-square lg:w-64 lg:shrink-0">
-                                    <PostImage cloud_name={cloud_name} postImage={post.image} className="absolute inset-0 h-full w-full rounded-2xl bg-gray-50 object-cover" />
+                                    <PostImage cloudname={cloudname} postImage={post.image} className="absolute inset-0 h-full w-full rounded-2xl bg-gray-50 object-cover" />
 
                                     <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-gray-900/10" />
                                 </div>
@@ -117,7 +118,7 @@ const Health = () => {
                                     </div>
                                     <div className="mt-2 flex border-t border-gray-900/5 p-3">
                                         <div className="relative flex items-center gap-x-4">
-                                               <AuthorProfileImage cloud_name={cloud_name} authorImage={post.author?.profile?.image}
+                                               <AuthorProfileImage cloudname={cloudname} authorImage={post.author?.profile?.image}
                                     className="h-10 w-10 rounded-full bg-gray-100" />
                                             <div className="text-sm leading-6">
                                                 <p className="font-semibold text-gray-900 dark:text-gray-200">

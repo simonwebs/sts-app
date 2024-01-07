@@ -35,7 +35,7 @@ const PostCardItem = ({ post }) => {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(!!currentUser);
 
   const profileImageId = author?.newImage || author?.profile?.image;
-  const cloudName = 'swed-dev';
+  const cloudName = 'techpulse';
 
   useEffect(() => {
     Meteor.call('posts.getPost', post._id, (error, fetchedPost) => {

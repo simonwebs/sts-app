@@ -29,50 +29,48 @@ const SettingPage = () => {
     const file = event.target.files[0];
     // Handle file change
   };
-const handleUsernameChange = (newUsername) => {
-  Meteor.call('updateUsername', newUsername, (error) => {
-    if (error) {
-      Swal.fire('Error', error.reason, 'error');
-    } else {
-      Swal.fire('Success', 'Username updated successfully', 'success');
+  const handleUsernameChange = (newUsername) => {
+    Meteor.call('updateUsername', newUsername, (error) => {
+      if (error) {
+        Swal.fire('Error', error.reason, 'error');
+      } else {
+        Swal.fire('Success', 'Username updated successfully', 'success');
+      }
+    });
+  };
+  const handleInputChange = (event) => {
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
+
+    setSettings({
+      ...settings,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    if (settings.username.length < 3) {
+      Swal.fire('Error', 'Username must be at least 3 characters', 'error');
+      return;
     }
-  });
-};
-const handleInputChange = (event) => {
-  const target = event.target;
-  const value = target.type === 'checkbox' ? target.checked : target.value;
-  const name = target.name;
 
-  setSettings({
-    ...settings,
-    [name]: value,
-  });
-};
+    // Update username
+    handleUsernameChange(settings.username);
 
-const handleSubmit = (event) => {
-  event.preventDefault();
+    // Update other settings
+    Meteor.call('updateUserSettings', settings, (error) => {
+      if (error) {
+        Swal.fire('Error', error.reason, 'error');
+      } else {
+        Swal.fire('Success', 'Settings updated successfully', 'success');
+      }
+    });
+  };
 
-  if (settings.username.length < 3) {
-    Swal.fire('Error', 'Username must be at least 3 characters', 'error');
-    return;
-  }
-
-  // Update username
-  handleUsernameChange(settings.username);
-
-  // Update other settings
-  Meteor.call('updateUserSettings', settings, (error) => {
-    if (error) {
-      Swal.fire('Error', error.reason, 'error');
-    } else {
-      Swal.fire('Success', 'Settings updated successfully', 'success');
-    }
-  });
-};
-
-
-
-return (
+  return (
   <div className='bg-white dark:bg-gray-700/100 p-5'>
     <h2 className="text-2xl font-bold mb-4 dark:text-gray-300">Settings</h2>
     <form onSubmit={handleSubmit} className="space-y-4">

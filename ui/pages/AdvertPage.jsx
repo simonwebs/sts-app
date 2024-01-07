@@ -1,7 +1,6 @@
 import React, { memo } from 'react';
 
 const AdvertPage = memo(() => {
-
   return (
     <div className="container mx-auto py-8">
       <div className="flex flex-col md:flex-row">
@@ -13,7 +12,7 @@ const AdvertPage = memo(() => {
             className='h-full w-full rounded-lg object-cover object-center transform transition duration-200 ease-in-out'
           />
         </div>
-        
+
         {/* Right Column (Text) */}
         <div className="md:w-1/2 mt-4 md:mt-0 md:ml-4">
           <h2 className="text-2xl font-semibold mb-4 dark:text-white">Title</h2>
@@ -24,5 +23,5 @@ const AdvertPage = memo(() => {
       </div>
     </div>
   );
-})
+});
 export default AdvertPage;

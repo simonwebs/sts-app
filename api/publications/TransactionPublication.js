@@ -10,7 +10,7 @@ Meteor.publish('userTransactions', function () {
   }
 
   const transactions = Transactions.find({ userId });
- // console.log('Publishing transactions for user: ', userId, transactions.fetch());
+  // console.log('Publishing transactions for user: ', userId, transactions.fetch());
 
   return transactions;
 });

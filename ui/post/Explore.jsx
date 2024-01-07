@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTracker } from 'meteor/react-meteor-data';
 import { PostsCollection } from '../../api/collections/posts.collection';
 import ClipLoader from 'react-spinners/ClipLoader';
+import { Meteor } from 'meteor/meteor';
 import { Link } from 'react-router-dom';
 import TimeSince from '../components/TimeSince';
 import AuthorProfileImage from '../pages/AuthorProfileImage';
@@ -10,7 +11,7 @@ const Explore = () => {
   // Use useState at the beginning
   const [currentPage, setCurrentPage] = useState(1);
 
-  const cloud_name = 'swed-dev';
+  const cloudName = 'techpulse';
   const { posts, isLoading } = useTracker(() => {
     const postHandle = Meteor.subscribe('postsWithAuthors');
     const fetchedPosts = PostsCollection.find({}, { sort: { createdAt: -1 } }).fetch(); // Sort by createdAt in descending order
@@ -29,7 +30,6 @@ const Explore = () => {
 
   // Display the two latest posts
   const latestPosts = posts.slice(0, 2);
-
 
   if (isLoading) {
     return (
@@ -64,10 +64,10 @@ const Explore = () => {
               <div className="relative w-full">
                 <img
                   src={post.image}
-                  alt={post.caption}  
-                  width="400"  
-                  height="225"  
-                  loading="lazy" 
+                  alt={post.caption}
+                  width="400"
+                  height="225"
+                  loading="lazy"
                   className="aspect-[16/9] w-full rounded-2xl bg-gray-100 object-cover sm:aspect-[2/1] lg:aspect-[3/2]"
                 />
                 <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-gray-900/10" />
@@ -96,7 +96,7 @@ const Explore = () => {
                 </div>
                  <div className="relative mt-8 flex items-center gap-x-4">
                   <AuthorProfileImage
-                    cloud_name={cloud_name}
+                    cloudName={cloudName}
                     authorImage={post.author?.profile?.image}
                   />
                   <div className="text-sm leading-6">
@@ -117,13 +117,13 @@ const Explore = () => {
         {Array.from({ length: totalPages }, (_, i) => (
                   <button
                     key={i + 1}
-                    aria-label={`Go to page ${i + 1}`} 
+                    aria-label={`Go to page ${i + 1}`}
                     className={`rounded-lg bg-indigo-600 p-1 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${i + 1 === currentPage ? 'font-semibold' : ''}`}
                     onClick={() => paginate(i + 1)}
                   >
                     {i + 1}
                   </button>
-                ))}
+        ))}
         </div>
       </div>
     </div>
